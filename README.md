@@ -444,9 +444,7 @@ Sure, here are the JSON schemas for both input and output:
         "fats": {
           "type": "integer"
         },
-        "water_intake
-
-": {
+        "water_intake": {
           "type": "number"
         }
       },
@@ -493,6 +491,5 @@ Sure, here are the JSON schemas for both input and output:
     "recommended_changes_to_improve_symptoms",
     "urgent_attention_required"
   ]
-}
 }
 ```
