@@ -1,13 +1,13 @@
 # Drus
+  ![Drus](./assets/blackbox.png)
 
-Drus is an AI Auto-immune Supervisor designed to analyze patient health metrics and symptoms. It generates detailed reports to help patients understand potential symptom triggers, suggest lifestyle changes to manage symptoms, and identify symptoms requiring urgent care. Drus is trained on scientific research papers about Lupus and Sjogren's syndrome for accurate analysis.
+  Drus is an AI Supervisor trained on scientific research papers about Lupus and Sjogren's syndrome for accurate analysis, designed to analyze patient health metrics and symptoms. It generates detailed reports to help patients understand potential symptom triggers, suggest lifestyle changes to manage symptoms, and identify symptoms requiring urgent care.
+
 
 # Abstract
 
 ## Inputs
-
-** JSON**
-- Patient ID
+- Patient Information Object
 - Date
 - Symptoms: {tag, description}
 - Sleep Quality: Text
