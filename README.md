@@ -1,10 +1,9 @@
-# Drus
-  ![Drus](./assets/blackbox.png)
+# Supervisor
+  ![Supervisor](./assets/blackbox.png)
 
-  Drus is an AI Supervisor trained on scientific research papers about Lupus and Sjogren's syndrome for accurate analysis, designed to analyze patient health metrics and symptoms. It generates detailed reports to help patients understand potential symptom triggers, suggest lifestyle changes to manage symptoms, and identify symptoms requiring urgent care.
+  Supervisor is and AI trained on scientific research papers about Lupus and Sjogren's syndrome for accurate analysis, designed to analyze patient health metrics and symptoms. It generates detailed reports to help patients understand potential symptom triggers, suggest lifestyle changes to manage symptoms, and identify symptoms requiring urgent care.
 
-
-# Abstract
+# Interface
 
 ## Inputs
 - Patient Information Object
@@ -61,10 +60,21 @@ Generate a report that includes:
 - Recommended Changes to Improve Symptoms
 - Indicator if any symptoms require urgent attention
 
+# Control Signals
+**Ask**: Requests for additional information or clarification.
+
+**Train**: Inputs used for training the system or updating its 
+knowledge base.
+
+**Report**: Commands to generate reports based on the available data.
+
+# Feedback Signals
+**TQC** (Train Queue Count): The number of items or tasks waiting in the queue to be processed for training.
+
+**RQC** (Report Queue Count): The number of reports waiting in the queue to be generated or processed.
 
 
-Sure, here are the JSON schemas for both input and output:
-
+# Schemas
 ## Input JSON Schema
 
 ```json
