@@ -63,7 +63,7 @@ Generate a report that includes:
 # Control Signals
 **Ask**: Requests for additional information or clarification.
 
-**Train**: Inputs used for training the system or updating its 
+**Train**: Inputs used for training the system or updating its
 knowledge base.
 
 **Report**: Commands to generate reports based on the available data.
@@ -72,7 +72,6 @@ knowledge base.
 **TQC** (Train Queue Count): The number of items or tasks waiting in the queue to be processed for training.
 
 **RQC** (Report Queue Count): The number of reports waiting in the queue to be generated or processed.
-
 
 # Schemas
 ## Input JSON Schema

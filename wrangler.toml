@@ -1,3 +1,52 @@
-name = "supervisor"
-main = "src/index.ts"
 compatibility_date = "2024-05-26"
+compatibility_flags = [ "nodejs_compat" ]
+account_id = ""
+main = "src/worker.ts"
+
+# #########################
+#         Dev Env        #
+# ########################
+name = "remission_supervisor_service_dev"
+
+[vars]
+ENVIRONMENT = "dev"
+
+[[kv_namespaces]]
+binding = "SUPERVISOR_KV_DEV"
+id = ""
+preview_id = ""
+
+[dev]
+port = 4242
+
+# #########################
+#     Staging Env        #
+# ########################
+
+[env.staging]
+name = "remission_supervisor_service_staging"
+workers_dev = false
+
+[env.staging.vars]
+ENVIRONMENT = "staging"
+
+[[env.staging.kv_namespaces]]
+binding = "SUPERVISOR_KV_STAGING"
+id = ""
+preview_id = ""
+
+# ########################
+#     Production Env     #
+# ########################
+
+[env.production]
+name = "remission_supervisor_service_production"
+workers_dev = false
+
+[env.production.vars]
+ENVIRONMENT = "production"
+
+[[env.production.kv_namespaces]]
+binding = "SUPERVISOR_KV_PRODUCTION"
+id = ""
+preview_id = ""
