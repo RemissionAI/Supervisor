@@ -1,8 +1,8 @@
 export type Bindings = {
-	ENVIRONMENT: "dev" | "staging" | "production";
-	SUPERVISOR_KV: KVNamespace;
-	SUPERVISOR_BUCKET: R2Bucket;
-};
+  ENVIRONMENT: 'dev' | 'staging' | 'production'
+  SUPERVISOR_KV: KVNamespace
+  SUPERVISOR_BUCKET: R2Bucket
+}
 
 export type Environment = {
   Bindings: Bindings
