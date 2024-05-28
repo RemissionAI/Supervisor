@@ -25,7 +25,7 @@ class ResponseHandler {
     return c.json(response, 400)
   }
 
-  apiError(c: Context, message: string, statusCode: StatusCode = 400) {
+  genericError(c: Context, message: string, statusCode: StatusCode = 400) {
     const response: ServiceResponse<null> = {
       success: false,
       errors: [{ message }],
@@ -34,7 +34,7 @@ class ResponseHandler {
     return c.json(response, statusCode)
   }
 
-  genericError(c: Context, message: string, statusCode: StatusCode = 500) {
+  serverError(c: Context, message: string, statusCode: StatusCode = 500) {
     const response: ServiceResponse<null> = {
       success: false,
       errors: [{ message }],

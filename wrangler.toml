@@ -1,6 +1,6 @@
 compatibility_date = "2024-05-26"
 compatibility_flags = [ "nodejs_compat" ]
-account_id = ""
+account_id = "mohammed"
 main = "src/worker.ts"
 
 # #########################
@@ -13,12 +13,11 @@ ENVIRONMENT = "dev"
 
 [[kv_namespaces]]
 binding = "SUPERVISOR_KV"
-id = ""
-preview_id = ""
+id = "111"
 
 [[r2_buckets]]
 binding = 'SUPERVISOR_BUCKET'
-bucket_name = ''
+bucket_name = '111'
 
 [dev]
 port = 4242
@@ -36,12 +35,11 @@ ENVIRONMENT = "staging"
 
 [[env.staging.kv_namespaces]]
 binding = "SUPERVISOR_KV"
-id = ""
-preview_id = ""
+id = "__STAGING_KV_ID__"
 
 [[env.staging.r2_buckets]]
 binding = 'SUPERVISOR_BUCKET'
-bucket_name = ''
+bucket_name = '__STAGING_BUCKET_NAME__'
 
 # ########################
 #     Production Env     #
@@ -56,9 +54,8 @@ ENVIRONMENT = "production"
 
 [[env.production.kv_namespaces]]
 binding = "SUPERVISOR_KV"
-id = ""
-preview_id = ""
+id = "__PRODUCTION_KV_ID__"
 
 [[env.production.r2_buckets]]
 binding = 'SUPERVISOR_BUCKET'
-bucket_name = ''
+bucket_name = '__PRODUCTION_BUCKET_NAME__'

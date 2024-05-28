@@ -22,8 +22,8 @@ app.onError((err: any, c) => {
   if (err instanceof ZodError)
     return ResponseHandler.validationErr(c, err)
   else if (err instanceof ServiceError)
-    return ResponseHandler.apiError(c, err.message, err.statusCode)
-  else return ResponseHandler.genericError(c, 'internal server error')
+    return ResponseHandler.genericError(c, err.message, err.statusCode)
+  else return ResponseHandler.serverError(c, 'internal server error')
 })
 
 defaultRoutes.forEach((route: any) => {
