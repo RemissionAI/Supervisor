@@ -6,7 +6,7 @@ main = "src/worker.ts"
 # #########################
 #         Dev Env        #
 # ########################
-name = "remission_supervisor_service_dev"
+name = "__DEV_SCRIPT_NAME__"
 
 [vars]
 ENVIRONMENT = "dev"
@@ -27,7 +27,7 @@ port = 4242
 # ########################
 
 [env.staging]
-name = "remission_supervisor_service_staging"
+name = "__STAGING_SCRIPT_NAME__"
 workers_dev = false
 
 [env.staging.vars]
@@ -46,7 +46,7 @@ bucket_name = '__STAGING_BUCKET_NAME__'
 # ########################
 
 [env.production]
-name = "remission_supervisor_service_production"
+name = "__PRODUCTION_SCRIPT_NAME__"
 workers_dev = false
 
 [env.production.vars]
