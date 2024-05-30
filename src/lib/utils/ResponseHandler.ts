@@ -1,7 +1,7 @@
 import type { ZodError } from 'zod'
 import type { Context } from 'hono'
 import type { StatusCode } from 'hono/utils/http-status'
-import type { ServiceResponse } from '../interfaces/common.interface'
+import type { ServiceResponse } from '~/shared/interfaces/common.interface'
 
 class ResponseHandler {
   success<T>(c: Context, data: T) {
