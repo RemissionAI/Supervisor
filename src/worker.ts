@@ -2,11 +2,13 @@ import type { Context } from 'hono'
 import { Hono } from 'hono'
 import { ZodError } from 'zod'
 import { WorkerEntrypoint } from 'cloudflare:workers'
-import * as TrainService from '~/services/train.service'
-import { ServiceError } from '~/utils/ServiceError'
-import ResponseHandler from '~/utils/ResponseHandler'
-import { defaultRoutes } from '~/routes'
-import type { Bindings, Environment } from '~/interfaces/common.interface'
+import { ServiceError } from '~/lib/utils/ServiceError'
+import ResponseHandler from '~/lib/utils/ResponseHandler'
+import { defaultRoutes } from '~/api/http/routes'
+import type {
+  Bindings,
+  Environment,
+} from '~/shared/interfaces/common.interface'
 
 const app = new Hono<Environment>()
 
@@ -42,6 +44,6 @@ export default class extends WorkerEntrypoint<Bindings> {
   }
 
   async train() {
-    return TrainService.train()
+    throw ServiceError.notImplemented()
   }
 }

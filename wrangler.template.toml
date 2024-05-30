@@ -3,6 +3,9 @@ compatibility_flags = [ "nodejs_compat" ]
 account_id = "__CF_ACCOUNT_ID__"
 main = "src/worker.ts"
 
+[ai]
+binding = "ai"
+
 # #########################
 #         Dev Env        #
 # ########################
@@ -14,10 +17,16 @@ ENVIRONMENT = "dev"
 [[kv_namespaces]]
 binding = "SUPERVISOR_KV"
 id = "__DEV_KV_ID__"
+preview_id = "__DEV_KV_ID__"
 
 [[r2_buckets]]
 binding = 'SUPERVISOR_BUCKET'
 bucket_name = '__DEV_BUCKET_NAME__'
+preview_bucket_name = "__DEV_BUCKET_NAME__"
+
+[[vectorize]]
+binding = "KNOWLEDGE_INDEX"
+index_name = "__DEV_VECTORIZE_INDEX__"
 
 [dev]
 port = 4242
@@ -40,6 +49,14 @@ id = "__STAGING_KV_ID__"
 [[env.staging.r2_buckets]]
 binding = 'SUPERVISOR_BUCKET'
 bucket_name = '__STAGING_BUCKET_NAME__'
+
+[[env.staging.vectorize]]
+binding = "KNOWLEDGE_INDEX"
+index_name = "__STAGING_VECTORIZE_INDEX__"
+
+[[env.staging.vectorize]]
+binding = "KNOWLEDGE_INDEX"
+index_name = "__PRODUCTION_VECTORIZE_INDEX__"
 
 # ########################
 #     Production Env     #

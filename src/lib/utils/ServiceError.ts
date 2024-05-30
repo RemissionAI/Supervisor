@@ -1,5 +1,5 @@
 import type { StatusCode } from 'hono/utils/http-status'
-import { ErrorCodes } from '~/interfaces/common.interface'
+import { ErrorCodes } from '~/shared/interfaces/common.interface'
 
 const ErrorMessages = {
   [ErrorCodes.BAD_REQUEST]: 'Bad Request',
