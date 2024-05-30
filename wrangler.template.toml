@@ -17,12 +17,12 @@ ENVIRONMENT = "dev"
 [[kv_namespaces]]
 binding = "SUPERVISOR_KV"
 id = "__DEV_KV_ID__"
-preview_id = "temp_kv_x1x4"
+preview_id = "__DEV_KV_ID__"
 
 [[r2_buckets]]
 binding = 'SUPERVISOR_BUCKET'
 bucket_name = '__DEV_BUCKET_NAME__'
-preview_bucket_name = "temp_bucket_x1x4"
+preview_bucket_name = "__DEV_BUCKET_NAME__"
 
 [[vectorize]]
 binding = "KNOWLEDGE_INDEX"
@@ -54,6 +54,10 @@ bucket_name = '__STAGING_BUCKET_NAME__'
 binding = "KNOWLEDGE_INDEX"
 index_name = "__STAGING_VECTORIZE_INDEX__"
 
+[[env.staging.vectorize]]
+binding = "KNOWLEDGE_INDEX"
+index_name = "__PRODUCTION_VECTORIZE_INDEX__"
+
 # ########################
 #     Production Env     #
 # ########################
@@ -72,7 +76,3 @@ id = "__PRODUCTION_KV_ID__"
 [[env.production.r2_buckets]]
 binding = 'SUPERVISOR_BUCKET'
 bucket_name = '__PRODUCTION_BUCKET_NAME__'
-
-[[env.staging.vectorize]]
-binding = "KNOWLEDGE_INDEX"
-index_name = "__PRODUCTION_VECTORIZE_INDEX__"

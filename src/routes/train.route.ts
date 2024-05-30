@@ -4,4 +4,4 @@ import * as TrainController from '~/controllers/train.controller'
 
 export const route = new Hono<Environment>()
 
-route.get('/', TrainController.train)
+route.post('/', TrainController.train)

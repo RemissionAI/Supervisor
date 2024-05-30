@@ -1,6 +1,11 @@
 import type { Context } from 'hono'
 import * as TrainService from '~/services/train.service'
+import ResponseHandler from '~/utils/ResponseHandler'
 
 export async function train(c: Context) {
-  return await TrainService.train()
+  const body = await c.req.json()
+
+  const res = await TrainService.train(body)
+
+  return ResponseHandler.success(c, { data: res })
 }
