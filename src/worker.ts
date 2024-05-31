@@ -4,7 +4,7 @@ import { ZodError } from 'zod'
 import { WorkerEntrypoint } from 'cloudflare:workers'
 import { ServiceError } from '~/lib/utils/ServiceError'
 import ResponseHandler from '~/lib/utils/ResponseHandler'
-import { defaultRoutes } from '~/api/http/routes'
+import { defaultRoutes } from '~/api/http'
 import type {
   Bindings,
   Environment,
@@ -21,6 +21,7 @@ app.notFound((c) => {
 })
 
 app.onError((err: any, c) => {
+  console.error(err);
   if (err instanceof ZodError)
     return ResponseHandler.validationErr(c, err)
   else if (err instanceof ServiceError)

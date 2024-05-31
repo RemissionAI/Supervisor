@@ -1,4 +1,4 @@
-import { route as TrainRouter } from './train.route'
+import { route as TrainRouter } from './routes/train.route'
 
 const base_path = 'supervisor/v1'
 
