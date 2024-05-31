@@ -1,5 +1,5 @@
 import z from 'zod'
-import { pdfBlob } from './refines/pdfBlob.refine'
+import validPDF from './refines/validPDF.refine'
 
 export const AddKnowledgeSchema = z.discriminatedUnion('type', [
   z.object({
@@ -8,6 +8,6 @@ export const AddKnowledgeSchema = z.discriminatedUnion('type', [
   }),
   z.object({
     type: z.literal('pdf'),
-    source: pdfBlob,
+    source: validPDF,
   }),
 ])

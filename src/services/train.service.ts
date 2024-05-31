@@ -8,6 +8,8 @@ export async function train(data: unknown) {
   switch (knowledge.type) {
     case 'url':
       return await KnowledgeLoader.loadUrl(knowledge.source)
+    case 'pdf':
+      return KnowledgeLoader.loadPdf(knowledge.source)
     default:
       throw ServiceError.notImplemented()
   }
