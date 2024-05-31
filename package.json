@@ -30,7 +30,6 @@
     "@types/pdfjs-dist": "^2.10.378",
     "dotenv": "^16.4.5",
     "eslint": "^9.3.0",
-    "i": "^0.3.7",
     "typescript": "^5.4.5",
     "vitest": "^1.6.0",
     "wrangler": "3.57.1"

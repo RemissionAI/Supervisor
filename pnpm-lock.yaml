@@ -52,9 +52,6 @@ devDependencies:
   eslint:
     specifier: ^9.3.0
     version: 9.3.0
-  i:
-    specifier: ^0.3.7
-    version: 0.3.7
   typescript:
     specifier: ^5.4.5
     version: 5.4.5
@@ -3317,11 +3314,6 @@ packages:
     dependencies:
       ms: 2.1.2
     dev: false
-
-  /i@0.3.7:
-    resolution: {integrity: sha512-FYz4wlXgkQwIPqhzC5TdNMLSE5+GS1IIDJZY/1ZiEPCT2S3COUVZeT5OW4BmW4r5LHLQuOosSwsvnroG9GR59Q==}
-    engines: {node: '>=0.4'}
-    dev: true
 
   /ignore@5.3.1:
     resolution: {integrity: sha512-5Fytz/IraMjqpwfd34ke28PTVMjZjJG2MPn5t7OE4eUCUNf8BAa7b5WUS9/Qvr6mwOQS7Mk6vdsMno5he+T8Xw==}
