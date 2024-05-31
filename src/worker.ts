@@ -21,7 +21,7 @@ app.notFound((c) => {
 })
 
 app.onError((err: any, c) => {
-  console.error(err);
+  console.error(err)
   if (err instanceof ZodError)
     return ResponseHandler.validationErr(c, err)
   else if (err instanceof ServiceError)
