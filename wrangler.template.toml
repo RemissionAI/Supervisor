@@ -3,13 +3,13 @@ compatibility_flags = [ "nodejs_compat" ]
 account_id = "__CF_ACCOUNT_ID__"
 main = "src/worker.ts"
 
-[ai]
-binding = "ai"
-
 # #########################
 #         Dev Env        #
 # ########################
 name = "__DEV_SCRIPT_NAME__"
+
+[ai]
+binding = "AI"
 
 [vars]
 ENVIRONMENT = "dev"
@@ -34,10 +34,12 @@ port = 4242
 # #########################
 #     Staging Env        #
 # ########################
-
 [env.staging]
 name = "__STAGING_SCRIPT_NAME__"
 workers_dev = false
+
+[env.staging.ai]
+binding = "AI"
 
 [env.staging.vars]
 ENVIRONMENT = "staging"
@@ -61,10 +63,12 @@ index_name = "__PRODUCTION_VECTORIZE_INDEX__"
 # ########################
 #     Production Env     #
 # ########################
-
 [env.production]
 name = "__PRODUCTION_SCRIPT_NAME__"
 workers_dev = false
+
+[env.production.ai]
+binding = "AI"
 
 [env.production.vars]
 ENVIRONMENT = "production"
