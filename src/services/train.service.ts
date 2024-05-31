@@ -7,27 +7,77 @@ import { AddKnowledgeSchema } from '~/lib/validations/train.validation'
 import KnowledgeLoader from '~/lib/utils/KnowledgeLoader'
 import type { Bindings } from '~/shared/interfaces/common.interface'
 
-export async function train(env: Bindings, data: unknown) {
-  const knowledge = AddKnowledgeSchema.parse(data)
+export async function loadKnowledge(
+  env: Bindings,
+  inputData: unknown,
+): Promise<boolean> {
+  const parsedData = AddKnowledgeSchema.parse(inputData)
 
-  let docs: Document[]
+  const documents: Document[] = await loadDocuments(
+    parsedData.type,
+    parsedData.source,
+  )
 
-  switch (knowledge.type) {
-    case 'url':
-      docs = await KnowledgeLoader.loadUrl(knowledge.source)
-    case 'pdf':
-      docs = await KnowledgeLoader.loadPdf(knowledge.source as File)
+  const embeddings = createEmbeddings(env.AI)
+  const vectorStore = createVectorStore(embeddings, env.KNOWLEDGE_INDEX)
+
+  const formattedDocuments = formatDocuments(documents)
+
+  await addDocumentsToStore(vectorStore, formattedDocuments)
+
+  return true
+}
+
+async function loadDocuments(
+  type: string,
+  source: string | File,
+): Promise<Document[]> {
+  try {
+    switch (type) {
+      case 'url':
+        return await KnowledgeLoader.loadUrl(source as string)
+      case 'pdf':
+        return await KnowledgeLoader.loadPdf(source as File)
+      default:
+        throw new Error('Unsupported knowledge type')
+    }
   }
+  catch (error) {
+    throw new Error('Failed to load documents')
+  }
+}
 
-  const embeddings = new CloudflareWorkersAIEmbeddings({
-    binding: env.AI,
+function createEmbeddings(binding: any): CloudflareWorkersAIEmbeddings {
+  return new CloudflareWorkersAIEmbeddings({
+    binding,
     model: '@cf/baai/bge-small-en-v1.5',
   })
-  const store = new CloudflareVectorizeStore(embeddings, {
-    index: env.KNOWLEDGE_INDEX,
+}
+
+function createVectorStore(
+  embeddings: CloudflareWorkersAIEmbeddings,
+  index: VectorizeIndex,
+): CloudflareVectorizeStore {
+  return new CloudflareVectorizeStore(embeddings, {
+    index,
   })
+}
 
-  await store.addDocuments(docs)
+function formatDocuments(documents: Document[]): Document[] {
+  return documents.map(doc => ({
+    pageContent: doc.pageContent,
+    metadata: {},
+  }))
+}
 
-  return true;
+async function addDocumentsToStore(
+  store: CloudflareVectorizeStore,
+  documents: Document[],
+): Promise<void> {
+  try {
+    await store.addDocuments(documents)
+  }
+  catch (error) {
+    throw new Error('Failed to add documents to the store')
+  }
 }

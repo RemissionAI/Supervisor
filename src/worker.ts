@@ -2,6 +2,7 @@ import type { Context } from 'hono'
 import { Hono } from 'hono'
 import { ZodError } from 'zod'
 import { WorkerEntrypoint } from 'cloudflare:workers'
+import { RpcController } from './api/rpc/RpcController'
 import { ServiceError } from '~/lib/utils/ServiceError'
 import ResponseHandler from '~/lib/utils/ResponseHandler'
 import { defaultRoutes } from '~/api/http'
@@ -39,12 +40,12 @@ app.get('/whoami', (c: Context) => {
   })
 })
 
-export default class extends WorkerEntrypoint<Bindings> {
-  async fetch(req: Request) {
-    return app.fetch(req)
+export class SupervisorService extends WorkerEntrypoint<Bindings> {
+  async target() {
+    return new RpcController()
   }
+}
 
-  async train() {
-    throw ServiceError.notImplemented()
-  }
+export default {
+  fetch: app.fetch,
 }

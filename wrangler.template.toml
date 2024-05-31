@@ -34,12 +34,12 @@ port = 4242
 # #########################
 #     Staging Env        #
 # ########################
-[env.staging.ai]
-binding = "AI"
-
 [env.staging]
 name = "__STAGING_SCRIPT_NAME__"
 workers_dev = false
+
+[env.staging.ai]
+binding = "AI"
 
 [env.staging.vars]
 ENVIRONMENT = "staging"
@@ -63,12 +63,12 @@ index_name = "__PRODUCTION_VECTORIZE_INDEX__"
 # ########################
 #     Production Env     #
 # ########################
-[env.production.ai]
-binding = "AI"
-
 [env.production]
 name = "__PRODUCTION_SCRIPT_NAME__"
 workers_dev = false
+
+[env.production.ai]
+binding = "AI"
 
 [env.production.vars]
 ENVIRONMENT = "production"
