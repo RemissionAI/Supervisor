@@ -5,7 +5,7 @@ import ResponseHandler from '~/lib/utils/ResponseHandler'
 export async function train(c: Context) {
   const body = await c.req.parseBody()
 
-  const res = await TrainService.train(body)
+  const res = await TrainService.train(c.env, body)
 
   return ResponseHandler.success(c, { data: res })
 }

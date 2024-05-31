@@ -1,16 +1,33 @@
+import type { Document } from 'langchain/document'
+import {
+  CloudflareVectorizeStore,
+  CloudflareWorkersAIEmbeddings,
+} from '@langchain/cloudflare'
 import { AddKnowledgeSchema } from '~/lib/validations/train.validation'
-import { ServiceError } from '~/lib/utils/ServiceError'
 import KnowledgeLoader from '~/lib/utils/KnowledgeLoader'
+import type { Bindings } from '~/shared/interfaces/common.interface'
 
-export async function train(data: unknown) {
+export async function train(env: Bindings, data: unknown) {
   const knowledge = AddKnowledgeSchema.parse(data)
+
+  let docs: Document[]
 
   switch (knowledge.type) {
     case 'url':
-      return await KnowledgeLoader.loadUrl(knowledge.source)
+      docs = await KnowledgeLoader.loadUrl(knowledge.source)
     case 'pdf':
-      return KnowledgeLoader.loadPdf(knowledge.source)
-    default:
-      throw ServiceError.notImplemented()
+      docs = await KnowledgeLoader.loadPdf(knowledge.source as File)
   }
+
+  const embeddings = new CloudflareWorkersAIEmbeddings({
+    binding: env.AI,
+    model: '@cf/baai/bge-small-en-v1.5',
+  })
+  const store = new CloudflareVectorizeStore(embeddings, {
+    index: env.KNOWLEDGE_INDEX,
+  })
+
+  await store.addDocuments(docs)
+
+  return true;
 }
