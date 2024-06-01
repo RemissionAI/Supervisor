@@ -1,6 +1,8 @@
-# Knowledge
+# Knowledge dataset
 
 Supervisor AI is trained on this resources.
+
+https://www.lupusencyclopedia.com/patient-resources/
 
 ### Lupus Foundation of America
 - [What is lupus?](https://www.lupus.org/resources/what-is-lupus)
