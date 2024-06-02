@@ -29,6 +29,8 @@ Supervisor AI is trained on this resources.
 | Us in Lupus | sitemap | https://www.usinlupus.com/ | https://www.usinlupus.com/sitemap.xml | 
 | London Lupus Centre Blog | sitemap | https://www.londonlupuscentre.com |https://www.londonlupuscentre.com/blog-posts-sitemap.xml |
 | Lupus corner | sitemap | https://lupuscorner.com | https://lupuscorner.com/page-sitemap.xml | 
+| fai2r | sitemap | https://www.fai2r.org | https://www.fai2r.org/sitemap_index.xml |
+
 
 ## JSON
 ```json
