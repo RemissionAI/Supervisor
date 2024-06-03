@@ -23,12 +23,16 @@ replace_placeholders() {
   local kv_id_var="${env}_KV_ID"
   local bucket_name_var="${env}_BUCKET_NAME"
   local vectorize_index_name_var="${env}_VECTORIZE_INDEX"
+  local database_name_var="${env}_DATABASE_NAME"
+  local database_id_var="${env}_DATABASE_ID"
   
   sed -e "s/__CF_ACCOUNT_ID__/${CF_ACCOUNT_ID}/g" \
       -e "s/__${env}_SCRIPT_NAME__/${!script_name_var}/g" \
       -e "s/__${env}_KV_ID__/${!kv_id_var}/g" \
       -e "s/__${env}_BUCKET_NAME__/${!bucket_name_var}/g" \
       -e "s/__${env}_VECTORIZE_INDEX__/${!vectorize_index_name_var}/g" \
+      -e "s/__${env}_DATABASE_NAME__/${!database_name_var}/g" \
+      -e "s/__${env}_DATABASE_ID__/${!database_id_var}/g" \
       "$CONFIG_FILE" > "$OUTPUT_FILE"
 }
 

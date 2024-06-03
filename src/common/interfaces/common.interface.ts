@@ -4,6 +4,7 @@ export type Bindings = {
 	SUPERVISOR_BUCKET: R2Bucket;
 	KNOWLEDGE_INDEX: VectorizeIndex;
 	AI: Fetcher;
+  SUPERVISOR_DB: D1Database
 };
 
 export type Environment = {
