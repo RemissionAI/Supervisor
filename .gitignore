@@ -1,5 +1,17 @@
-node_modules
+# Wrangler
 .wrangler
 .dev.vars
 wrangler.toml
+
+# dotenv environment variables file
 .env
+.DS_Store
+
+# Nuxt.js 
+.nuxt
+dist
+
+# Dependency directories
+node_modules
+.DS_Store
+pnpm-lock.yaml

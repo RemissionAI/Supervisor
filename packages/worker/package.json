@@ -1,0 +1,40 @@
+{
+  "name": "worker",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "generate-dev-config": "bash ../../scripts/generate-config.sh",
+    "generate-migrations": "drizzle-kit generate",
+    "start": "pnpm run generate-dev-config && wrangler dev --remote",
+    "deploy": "wrangler deploy",
+    "deploy-staging": "wrangler deploy --env staging",
+    "deploy-production": "wrangler deploy --env production",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "test": "vitest"
+  },
+  "dependencies": {
+    "@langchain/cloudflare": "^0.0.6",
+    "@langchain/community": "^0.2.4",
+    "@langchain/core": "^0.2.3",
+    "@mozilla/readability": "^0.5.0",
+    "cheerio": "1.0.0-rc.12",
+    "drizzle-orm": "^0.31.0",
+    "hono": "^4.3.11",
+    "html-to-text": "^9.0.5",
+    "langchain": "^0.2.3",
+    "pdfjs-dist": "^4.3.136",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@antfu/eslint-config": "^2.18.1",
+    "@cloudflare/workers-types": "^4.20240512.0",
+    "@types/pdfjs-dist": "^2.10.378",
+    "dotenv": "^16.4.5",
+    "drizzle-kit": "^0.22.1",
+    "eslint": "^9.3.0",
+    "typescript": "^5.4.5",
+    "vitest": "^1.6.0",
+    "wrangler": "3.58.0"
+  }
+}

@@ -1,7 +1,7 @@
 compatibility_date = "2024-05-26"
 compatibility_flags = [ "nodejs_compat" ]
 account_id = "__CF_ACCOUNT_ID__"
-main = "src/worker.ts"
+main = "src/index.ts"
 
 # #########################
 #         Dev Env        #
