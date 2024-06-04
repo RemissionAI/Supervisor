@@ -1,7 +1,7 @@
 import { integer, sqliteTable, text } from 'drizzle-orm/sqlite-core'
 import { ALLOWED_TRAINING_SOURCES, TASK_STATUS } from '~/config/constants'
 
-export const training_tasks = sqliteTable('training_tasks', {
+export const trainingTasks = sqliteTable('training_tasks', {
   id: integer('id', { mode: 'number' }).primaryKey({ autoIncrement: true }),
   type: text('text', { enum: ALLOWED_TRAINING_SOURCES }).notNull(),
   source: text('source').notNull(),

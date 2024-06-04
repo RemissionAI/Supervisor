@@ -4,7 +4,7 @@ import {
   CloudflareWorkersAIEmbeddings,
 } from '@langchain/cloudflare'
 import { AddKnowledgeSchema } from '~/lib/validations/train.validation'
-import KnowledgeLoader from '~/lib/utils/KnowledgeLoader'
+import KnowledgeLoader from '~/lib/utils/knowledge-loader'
 import type { Bindings } from '~/common/interfaces/common.interface'
 
 export async function loadKnowledge(
