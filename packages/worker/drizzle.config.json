@@ -1,0 +1,5 @@
+{
+  "out": "./migrations",
+  "dialect": "sqlite",
+  "schema": "./src/config/db/schema.ts"
+}
