@@ -16,3 +16,8 @@ export const AddKnowledgeSchema = z.discriminatedUnion('type', [
 
 export const BaseTrainingTaskSchema = createSelectSchema(trainingTasks)
 export const InsertTrainingTaskSchema = createInsertSchema(trainingTasks)
+export const UpdateTrainingTaskSchema = InsertTrainingTaskSchema.pick({
+  status: true,
+  details: true,
+  finishedAt: true,
+})
