@@ -9,5 +9,5 @@ export const trainingTasks = sqliteTable('training_tasks', {
   status: text('status', { enum: TASK_STATUS }).notNull(),
   details: text('details', { mode: 'json' }).$type<ITrainingTaskDetails>(),
   startedAt: integer('started_at', { mode: 'timestamp' }).notNull(),
-  finishedAt: integer('finisehd_at', { mode: 'timestamp' }).notNull(),
+  finishedAt: integer('finisehd_at', { mode: 'timestamp' }),
 })
