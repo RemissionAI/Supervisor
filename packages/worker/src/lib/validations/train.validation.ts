@@ -1,7 +1,7 @@
 import z from 'zod'
+import { createInsertSchema, createSelectSchema } from 'drizzle-zod'
 import validPDF from './refines/validPDF.refine'
-import { createInsertSchema, createSelectSchema} from 'drizzle-zod';
-import { trainingTasks,  } from '~/config/db/schema';
+import { trainingTasks } from '~/config/db/schema'
 
 export const AddKnowledgeSchema = z.discriminatedUnion('type', [
   z.object({
@@ -14,5 +14,5 @@ export const AddKnowledgeSchema = z.discriminatedUnion('type', [
   }),
 ])
 
-export const BaseTrainingTaskSchema = createSelectSchema(trainingTasks);
-export const InsertTrainingTaskSchema = createInsertSchema(trainingTasks);
+export const BaseTrainingTaskSchema = createSelectSchema(trainingTasks)
+export const InsertTrainingTaskSchema = createInsertSchema(trainingTasks)

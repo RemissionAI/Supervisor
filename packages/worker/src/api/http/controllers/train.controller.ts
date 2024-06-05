@@ -1,11 +1,11 @@
-import type { Context } from "hono";
-import * as TrainService from "~/core/services/train.service";
-import ResponseHandler from "~/lib/utils/response-handler";
+import type { Context } from 'hono'
+import * as TrainService from '~/core/services/train.service'
+import ResponseHandler from '~/lib/utils/response-handler'
 
 export async function train(c: Context) {
-	const body = await c.req.parseBody();
+  const body = await c.req.parseBody()
 
-	const res = await TrainService.loadKnowledge(c.env, body);
+  const res = await TrainService.loadKnowledge(c.env, body)
 
-	return ResponseHandler.success(c, res);
+  return ResponseHandler.success(c, res)
 }

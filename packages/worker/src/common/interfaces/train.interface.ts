@@ -1,5 +1,5 @@
 import type { z } from 'zod'
-import { BaseTrainingTaskSchema, InsertTrainingTaskSchema, type AddKnowledgeSchema } from '~/lib/validations/train.validation'
+import type { BaseTrainingTaskSchema, InsertTrainingTaskSchema } from '~/lib/validations/train.validation'
 
 export enum TaskStatus {
   Queued = 'queued',
@@ -8,7 +8,11 @@ export enum TaskStatus {
   Failed = 'failed',
 }
 
-export type AllowedTrainingSource = 'url' | 'sitemap' | 'pdf' | string[]
+export interface ITrainingTaskDetails {
+  error?: string
+}
+
+export type IAllowedTrainingSource = 'url' | 'sitemap' | 'pdf' | string[]
 
 export type ITrainingTask = z.infer<typeof BaseTrainingTaskSchema>
 export type IInsertTrainingTask = z.infer<typeof InsertTrainingTaskSchema>
