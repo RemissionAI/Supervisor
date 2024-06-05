@@ -6,7 +6,7 @@ export class TrainingTask extends BaseModel {
   type: IAllowedTrainingSource
   source: string
   status: string
-  details: ITrainingTaskDetails
+  details: ITrainingTaskDetails | null
   startedAt: Date
   finishedAt: Date
 
