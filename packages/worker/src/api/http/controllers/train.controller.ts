@@ -11,27 +11,26 @@ export async function train(c: Context) {
   return ResponseHandler.success(c, res)
 }
 
-
 export async function insert(c: Context) {
   const trainingRepo = new TrainingTaskRepository(c.env)
 
   const data = await trainingRepo.insertTrainingTask({
-		type: "url",
-		source: "https://kaleidoscopefightinglupus.org",
+    type: 'url',
+    source: 'https://kaleidoscopefightinglupus.org',
     status: 'queued',
     details: {
-      "err": "hi"
+      err: 'hi',
     },
-    startedAt: new Date()
-	});
+    startedAt: new Date(),
+  })
 
   return ResponseHandler.success(c, data)
 }
 
 export async function list(c: Context) {
-	const trainingRepo = new TrainingTaskRepository(c.env);
+  const trainingRepo = new TrainingTaskRepository(c.env)
 
-	const data = await trainingRepo.listTrainingTasks(1, 10)
+  const data = await trainingRepo.listTrainingTasks(1, 10)
 
-	return ResponseHandler.success(c, data);
+  return ResponseHandler.success(c, data)
 }
