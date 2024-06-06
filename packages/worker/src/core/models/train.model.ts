@@ -8,7 +8,7 @@ export class TrainingTask extends BaseModel {
   status: string
   details: ITrainingTaskDetails | null
   startedAt: Date
-  finishedAt: Date
+  finishedAt: Date | null
 
   private_fields = []
 

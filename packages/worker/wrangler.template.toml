@@ -33,6 +33,15 @@ binding = "SUPERVISOR_DB"
 database_name = "__DEV_DATABASE_NAME__"
 database_id = "__DEV_DATABASE_ID__"
 
+[[queues.producers]]
+queue = "__DEV_TRAINING_QUEUE__"
+binding = "SUPERVISOR_TRAINING_QUEUE"
+
+[[queues.consumers]]
+queue = "__DEV_TRAINING_QUEUE__"
+max_batch_size = 1
+max_retries = 2
+
 [dev]
 port = 4242
 
@@ -70,6 +79,15 @@ binding = "SUPERVISOR_DB"
 database_name = "__STAGING_DATABASE_NAME__"
 database_id = "__STAGING_DATABASE_ID__"
 
+[[env.staging.queues.producers]]
+queue = "__STAGING_TRAINING_QUEUE__"
+binding = "SUPERVISOR_TRAINING_QUEUE"
+
+[[env.staging.queues.consumers]]
+queue = "__STAGING_TRAINING_QUEUE__"
+max_batch_size = 1
+max_retries = 2
+
 # ########################
 #     Production Env     #
 # ########################
@@ -95,3 +113,12 @@ bucket_name = '__PRODUCTION_BUCKET_NAME__'
 binding = "SUPERVISOR_DB"
 database_name = "__PRODUCTION_DATABASE_NAME__"
 database_id = "__PRODUCTION_DATABASE_ID__"
+
+[[env.production.queues.producers]]
+queue = "__PRODUCTION_TRAINING_QUEUE__"
+binding = "SUPERVISOR_TRAINING_QUEUE"
+
+[[env.production.queues.consumers]]
+queue = "__PRODUCTION_TRAINING_QUEUE__"
+max_batch_size = 1
+max_retries = 2

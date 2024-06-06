@@ -5,6 +5,7 @@ export type Bindings = {
 	KNOWLEDGE_INDEX: VectorizeIndex;
 	AI: Fetcher;
   SUPERVISOR_DB: D1Database
+  SUPERVISOR_TRAINING_QUEUE: Queue<any>
 };
 
 export type Environment = {
