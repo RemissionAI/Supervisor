@@ -3,7 +3,7 @@ import { TrainingTask } from '../models/train.model'
 import { BaseRepository } from './base.repository'
 import { trainingTasks } from '~/config/db/schema'
 import type { Bindings } from '~/common/interfaces/common.interface'
-import type { IInsertTrainingTask, IUpdateTrainingTask } from '~/common/interfaces/train.interface'
+import type { InsertTrainingTask, UpdateTrainingTask } from '~/common/interfaces/train.interface'
 
 export class TrainingTaskRepository extends BaseRepository {
   private readonly trainingTaskTable = trainingTasks
@@ -21,7 +21,7 @@ export class TrainingTaskRepository extends BaseRepository {
    * @param task - The training task to be inserted.
    * @returns The inserted training task.
    */
-  async insertTrainingTask(task: IInsertTrainingTask): Promise<TrainingTask> {
+  async insertTrainingTask(task: InsertTrainingTask): Promise<TrainingTask> {
     try {
       const result = await this.db
         .insert(this.trainingTaskTable)
@@ -71,7 +71,7 @@ export class TrainingTaskRepository extends BaseRepository {
    */
   async updateTrainingTask(
     id: number,
-    updatedTask: Partial<IUpdateTrainingTask>,
+    updatedTask: Partial<UpdateTrainingTask>,
   ): Promise<TrainingTask> {
     try {
       const result = await this.db

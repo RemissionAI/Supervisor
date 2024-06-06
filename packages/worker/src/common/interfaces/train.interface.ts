@@ -8,12 +8,17 @@ export enum TaskStatus {
   Failed = 'failed',
 }
 
-export interface ITrainingTaskDetails {
+export interface TrainingTaskDetails {
   error?: string
 }
 
-export type IAllowedTrainingSource = 'url' | 'sitemap' | 'pdf' | string[]
+export type AllowedTrainingSource = 'url' | 'sitemap' | 'pdf' | string[]
 
-export type ITrainingTask = z.infer<typeof BaseTrainingTaskSchema>
-export type IInsertTrainingTask = z.infer<typeof InsertTrainingTaskSchema>
-export type IUpdateTrainingTask = z.infer<typeof UpdateTrainingTaskSchema>
+export interface PushQueueTrainingTask {
+  type: AllowedTrainingSource
+  source: string
+}
+
+export type TrainingTask = z.infer<typeof BaseTrainingTaskSchema>
+export type InsertTrainingTask = z.infer<typeof InsertTrainingTaskSchema>
+export type UpdateTrainingTask = z.infer<typeof UpdateTrainingTaskSchema>

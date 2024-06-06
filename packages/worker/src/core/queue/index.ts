@@ -1,7 +1,8 @@
 import type { Bindings } from '~/common/interfaces/common.interface'
+import { PushQueueTrainingTask } from '~/common/interfaces/train.interface'
 
 export default async function queue(
-  batch: MessageBatch<any>,
+  batch: MessageBatch<PushQueueTrainingTask>,
   env: Bindings,
 ): Promise<void> {
   for (const message of batch.messages) {
