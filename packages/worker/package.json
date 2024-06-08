@@ -5,7 +5,7 @@
   "scripts": {
     "generate-config": "bash ../../scripts/generate-config.sh",
     "generate-migrations": "drizzle-kit generate",
-    "start": "pnpm run generate-dev-config && wrangler dev --remote",
+    "start": "pnpm run generate-config && wrangler dev --remote",
     "deploy": "wrangler deploy",
     "deploy-staging": "wrangler deploy --env staging",
     "deploy-production": "wrangler deploy --env production",

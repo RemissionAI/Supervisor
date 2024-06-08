@@ -6,7 +6,7 @@ main = "src/index.ts"
 # #########################
 #         Dev Env        #
 # ########################
-name = "__DEV_SCRIPT_NAME__"
+# name = "__DEV_SCRIPT_NAME__"
 
 [ai]
 binding = "AI"
