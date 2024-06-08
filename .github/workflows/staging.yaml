@@ -29,6 +29,7 @@ jobs:
         with:
           packageManager: pnpm
           apiToken: ${{ secrets.CF_API_TOKEN }}
+          workingDirectory: './packages/worker'
           preCommands: |
             pnpm install
           command: deploy --env staging
