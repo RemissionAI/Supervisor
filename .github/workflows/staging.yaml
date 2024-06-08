@@ -21,7 +21,6 @@ jobs:
 
       - name: Generate wrangler.toml
         run: |
-          printenv
           pnpm run worker:generate-config staging
         env:
           CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
