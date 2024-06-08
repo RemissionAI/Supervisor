@@ -15,7 +15,7 @@ if [ -f "$OUTPUT_FILE" ]; then
   rm "$OUTPUT_FILE"
 fi
 
-# printenv
+printenv
 
 replace_placeholders() {
   local env=$1
