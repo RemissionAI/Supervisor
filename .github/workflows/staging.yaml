@@ -22,14 +22,14 @@ jobs:
         run: pnpm install
 
       - name: Generate wrangler.toml
-        run: npm run worker:generate-config staging
+        run: pnpm run worker:generate-config staging
 
       - name: Publish app
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}
           preCommands: |
-            npm install
+            pnpm install
           command: deploy --env staging
           environment: staging
           secrets: |
