@@ -70,10 +70,6 @@ bucket_name = '__STAGING_BUCKET_NAME__'
 binding = "KNOWLEDGE_INDEX"
 index_name = "__STAGING_VECTORIZE_INDEX__"
 
-[[env.staging.vectorize]]
-binding = "KNOWLEDGE_INDEX"
-index_name = "__STAGING_VECTORIZE_INDEX__"
-
 [[env.staging.d1_databases]]
 binding = "SUPERVISOR_DB"
 database_name = "__STAGING_DATABASE_NAME__"
