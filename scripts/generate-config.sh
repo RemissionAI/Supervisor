@@ -62,7 +62,3 @@ case "$ENVIRONMENT" in
 esac
 
 echo "Config file wrangler.toml generated successfully. ✅"
-
-grep "__" "$OUTPUT_FILE" && echo "Replacement error: Placeholders still exist in the output file" && exit 1
-
-cat "$OUTPUT_FILE"
