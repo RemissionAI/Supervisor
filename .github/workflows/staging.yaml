@@ -10,16 +10,22 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     name: Deploy
+    env:
+      CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+      STAGING_SCRIPT_NAME: ${{ secrets.STAGING_SCRIPT_NAME }}
+      STAGING_KV_ID: ${{ secrets.STAGING_KV_ID }}
+      STAGING_BUCKET_NAME: ${{ secrets.STAGING_BUCKET_NAME }}
+      STAGING_DATABASE_ID: ${{ secrets.STAGING_DATABASE_ID }}
+      STAGING_DATABASE_NAME: ${{ secrets.STAGING_DATABASE_NAME }}
+      STAGING_TRAINING_QUEUE: ${{ secrets.STAGING_TRAINING_QUEUE }}
+
     steps:
       - uses: actions/checkout@v3
 
-        name: Install pnpm
-      - uses: pnpm/action-setup@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
         with:
           version: 8
-
-      - name: Install dependencies
-        run: pnpm install
 
       - name: Generate wrangler.toml
         run: pnpm run worker:generate-config staging
@@ -42,11 +48,3 @@ jobs:
             STAGING_DATABASE_ID
             STAGING_DATABASE_NAME
             STAGING_TRAINING_QUEUE
-        env:
-          CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
-          STAGING_SCRIPT_NAME: ${{ secrets.STAGING_SCRIPT_NAME }}
-          STAGING_KV_ID: ${{ secrets.STAGING_KV_ID }}
-          STAGING_BUCKET_NAME: ${{ secrets.STAGING_BUCKET_NAME }}
-          STAGING_DATABASE_ID: ${{ secrets.STAGING_DATABASE_ID }}
-          STAGING_DATABASE_NAME: ${{ secrets.STAGING_DATABASE_NAME }}
-          STAGING_TRAINING_QUEUE: ${{ secrets.STAGING_TRAINING_QUEUE }}
