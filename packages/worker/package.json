@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "generate-dev-config": "bash ../../scripts/generate-config.sh",
+    "generate-config": "bash ../../scripts/generate-config.sh",
     "generate-migrations": "drizzle-kit generate",
     "start": "pnpm run generate-dev-config && wrangler dev --remote",
     "deploy": "wrangler deploy",

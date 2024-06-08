@@ -3,7 +3,8 @@ name: Deploy to staging
 on:
   push:
     branches:
-      - main
+      - develop
+      - feature/*
 
 jobs:
   deploy:
