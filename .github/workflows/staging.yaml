@@ -28,8 +28,6 @@ jobs:
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}
-          preCommands: |
-            pnpm install
           command: deploy --env staging
           environment: staging
           secrets: |
