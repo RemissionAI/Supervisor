@@ -15,14 +15,13 @@ if [ -f "$OUTPUT_FILE" ]; then
   rm "$OUTPUT_FILE"
 fi
 
-# Debug
-echo "CF_ACCOUNT_ID: $CF_ACCOUNT_ID"
-echo "STAGING_SCRIPT_NAME: $STAGING_SCRIPT_NAME"
-echo "STAGING_KV_ID: $STAGING_KV_ID"
-echo "STAGING_BUCKET_NAME: $STAGING_BUCKET_NAME"
-echo "STAGING_DATABASE_ID: $STAGING_DATABASE_ID"
-echo "STAGING_DATABASE_NAME: $STAGING_DATABASE_NAME"
-echo "STAGING_TRAINING_QUEUE: $STAGING_TRAINING_QUEUE"
+[ -z "$CF_ACCOUNT_ID" ] && echo "CF_ACCOUNT_ID is not set" && exit 1 || echo "CF_ACCOUNT_ID is set and has length ${#CF_ACCOUNT_ID}"
+[ -z "$STAGING_SCRIPT_NAME" ] && echo "STAGING_SCRIPT_NAME is not set" && exit 1 || echo "STAGING_SCRIPT_NAME is set and has length ${#STAGING_SCRIPT_NAME}"
+[ -z "$STAGING_KV_ID" ] && echo "STAGING_KV_ID is not set" && exit 1 || echo "STAGING_KV_ID is set and has length ${#STAGING_KV_ID}"
+[ -z "$STAGING_BUCKET_NAME" ] && echo "STAGING_BUCKET_NAME is not set" && exit 1 || echo "STAGING_BUCKET_NAME is set and has length ${#STAGING_BUCKET_NAME}"
+[ -z "$STAGING_DATABASE_ID" ] && echo "STAGING_DATABASE_ID is not set" && exit 1 || echo "STAGING_DATABASE_ID is set and has length ${#STAGING_DATABASE_ID}"
+[ -z "$STAGING_DATABASE_NAME" ] && echo "STAGING_DATABASE_NAME is not set" && exit 1 || echo "STAGING_DATABASE_NAME is set and has length ${#STAGING_DATABASE_NAME}"
+[ -z "$STAGING_TRAINING_QUEUE" ] && echo "STAGING_TRAINING_QUEUE is not set" && exit 1 || echo "STAGING_TRAINING_QUEUE is set and has length ${#STAGING_TRAINING_QUEUE}"
 
 replace_placeholders() {
   local env=$1
@@ -63,5 +62,7 @@ case "$ENVIRONMENT" in
 esac
 
 echo "Config file wrangler.toml generated successfully. ✅"
+
+grep "__" "$OUTPUT_FILE" && echo "Replacement error: Placeholders still exist in the output file" && exit 1
 
 cat "$OUTPUT_FILE"
