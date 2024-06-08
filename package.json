@@ -6,7 +6,7 @@
     "packages/*"
   ],
   "scripts": {
-    "worker:generate-dev-config": "pnpm --filter worker run generate-dev-config"
+    "worker:generate-config": "pnpm --filter worker run generate-config"
   },
   "keywords": [],
   "author": "",

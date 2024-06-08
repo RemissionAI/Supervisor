@@ -17,7 +17,7 @@ jobs:
         run: npm install
 
       - name: Generate wrangler.toml
-        run: npm run generate-config staging
+        run: npm run worker:generate-config staging
 
       - name: Publish app
         uses: cloudflare/wrangler-action@v3
