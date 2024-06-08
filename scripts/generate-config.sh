@@ -56,3 +56,5 @@ case "$ENVIRONMENT" in
 esac
 
 echo "Config file wrangler.toml generated successfully. ✅"
+
+cat "$OUTPUT_FILE"
