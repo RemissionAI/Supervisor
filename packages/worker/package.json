@@ -3,12 +3,13 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "generate-dev-config": "bash ../../scripts/generate-config.sh",
+    "generate-config": "bash ../../scripts/generate-config.sh",
     "generate-migrations": "drizzle-kit generate",
-    "start": "pnpm run generate-dev-config && wrangler dev --remote",
+    "start": "pnpm run generate-config && wrangler dev --remote",
     "deploy": "wrangler deploy",
     "deploy-staging": "wrangler deploy --env staging",
     "deploy-production": "wrangler deploy --env production",
+    "apply-migrations": "wrangler d1 migrations apply $DB_NAME --remote",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "test": "vitest"
@@ -36,6 +37,6 @@
     "eslint": "^9.3.0",
     "typescript": "^5.4.5",
     "vitest": "^1.6.0",
-    "wrangler": "3.58.0"
+    "wrangler": "3.59.0"
   }
 }

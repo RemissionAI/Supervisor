@@ -3,36 +3,40 @@ name: Deploy to staging
 on:
   push:
     branches:
-      - main
+      - develop
+      - feature/*
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     name: Deploy
+
     steps:
       - uses: actions/checkout@v3
 
-      - name: Install dependencies
-        run: npm install
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 8
 
       - name: Generate wrangler.toml
-        run: npm run generate-dev-config
-
-      - name: Publish app
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CF_API_TOKEN }}
-          preCommands: |
-            npm install
-          command: deploy --env staging
-          environment: staging
-          secrets: |
-            CF_ACCOUNT_ID
-            STAGING_SCRIPT_NAME
-            STAGING_KV_ID
-            STAGING_BUCKET_NAME
+        run: |
+          pnpm run worker:generate-config staging
         env:
           CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
           STAGING_SCRIPT_NAME: ${{ secrets.STAGING_SCRIPT_NAME }}
           STAGING_KV_ID: ${{ secrets.STAGING_KV_ID }}
           STAGING_BUCKET_NAME: ${{ secrets.STAGING_BUCKET_NAME }}
+          STAGING_VECTORIZE_INDEX: ${{ secrets.STAGING_VECTORIZE_INDEX }}
+          STAGING_DATABASE_ID: ${{ secrets.STAGING_DATABASE_ID }}
+          STAGING_DATABASE_NAME: ${{ secrets.STAGING_DATABASE_NAME }}
+          STAGING_TRAINING_QUEUE: ${{ secrets.STAGING_TRAINING_QUEUE }}
+
+      - name: Publish app
+        uses: cloudflare/wrangler-action@v3.6.1
+        with:
+          packageManager: pnpm
+          apiToken: ${{ secrets.CF_API_TOKEN }}
+          workingDirectory: './packages/worker'
+          command: deploy --env staging
+          environment: staging

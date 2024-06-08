@@ -15,8 +15,6 @@ if [ -f "$OUTPUT_FILE" ]; then
   rm "$OUTPUT_FILE"
 fi
 
-# printenv
-
 replace_placeholders() {
   local env=$1
   local script_name_var="${env}_SCRIPT_NAME"
@@ -25,6 +23,7 @@ replace_placeholders() {
   local vectorize_index_name_var="${env}_VECTORIZE_INDEX"
   local database_name_var="${env}_DATABASE_NAME"
   local database_id_var="${env}_DATABASE_ID"
+  local training_queue_var="${env}_TRAINING_QUEUE"
   
   sed -e "s/__CF_ACCOUNT_ID__/${CF_ACCOUNT_ID}/g" \
       -e "s/__${env}_SCRIPT_NAME__/${!script_name_var}/g" \
@@ -33,6 +32,7 @@ replace_placeholders() {
       -e "s/__${env}_VECTORIZE_INDEX__/${!vectorize_index_name_var}/g" \
       -e "s/__${env}_DATABASE_NAME__/${!database_name_var}/g" \
       -e "s/__${env}_DATABASE_ID__/${!database_id_var}/g" \
+      -e "s/__${env}_TRAINING_QUEUE__/${!training_queue_var}/g" \
       "$CONFIG_FILE" > "$OUTPUT_FILE"
 }
 
