@@ -5,7 +5,7 @@ import type {
 
 export class KnowledgeModel extends BaseModel {
     id: number;
-    task_id: number;
+    taskId: number;
     type: string;
     source: string;
     createdAt: Date;
@@ -16,7 +16,7 @@ export class KnowledgeModel extends BaseModel {
 	constructor(knowledge: Knowledge) {
 		super();
 		this.id = knowledge.id
-        this.task_id = knowledge.task_id
+        this.taskId = knowledge.taskId
         this.type = knowledge.type
         this.source = knowledge.source
         this.createdAt = knowledge.createdAt

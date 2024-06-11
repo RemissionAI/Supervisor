@@ -49,7 +49,7 @@ export class KnowledgeRepository extends BaseRepository {
 		pageSize: number
 	): Promise<KnowledgeModel[]> {
 		try {
-			const query = this.db.select().from(this.table).where(eq(this.table.task_id, taskId));
+			const query = this.db.select().from(this.table).where(eq(this.table.taskId, taskId));
 
 			const paginatedResults = await this.withPagination(
 				query.$dynamic(),

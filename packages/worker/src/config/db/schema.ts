@@ -16,7 +16,7 @@ export const trainingTasks = sqliteTable("training_tasks", {
 
 export const knowledge = sqliteTable("knowledge", {
 	id: integer("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
-	task_id: integer("task_id")
+	taskId: integer("task_id")
 		.notNull()
 		.references(() => trainingTasks.id),
 	type: text("type").notNull(),
