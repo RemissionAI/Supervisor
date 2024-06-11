@@ -15,6 +15,13 @@
       "when": 1717584076968,
       "tag": "0001_white_iron_lad",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1718098229506,
+      "tag": "0002_sparkling_rockslide",
+      "breakpoints": true
     }
   ]
 }
