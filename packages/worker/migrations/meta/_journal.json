@@ -22,6 +22,13 @@
       "when": 1718098229506,
       "tag": "0002_sparkling_rockslide",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1718100069528,
+      "tag": "0003_brown_electro",
+      "breakpoints": true
     }
   ]
 }

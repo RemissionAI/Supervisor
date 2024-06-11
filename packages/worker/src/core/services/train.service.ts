@@ -16,13 +16,10 @@ export async function load(
 		parsedData.source
 	);
 
-
-	await addDocumentsToStore(env, formattedDocuments);
+	await addDocumentsToStore(env, documents);
 
 	return true;
 }
-
-async function processSitemap(env: Bindings, sitemap: string) {}
 
 async function getSourceDocuments(
 	type: string,
