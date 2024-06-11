@@ -1,83 +1,52 @@
-import type { Document } from 'langchain/document'
-import {
-  CloudflareVectorizeStore,
-  CloudflareWorkersAIEmbeddings,
-} from '@langchain/cloudflare'
-import { AddKnowledgeSchema } from '~/lib/validations/train.validation'
-import KnowledgeLoader from '~/lib/utils/knowledge-loader'
-import type { Bindings } from '~/common/interfaces/common.interface'
+import type { Document } from "langchain/document";
 
-export async function loadKnowledge(
-  env: Bindings,
-  inputData: unknown,
+import { LoadKnowledgeSchema } from "~/lib/validations/train.validation";
+import type { Bindings } from "~/common/interfaces/common.interface";
+import { addDocumentsToStore } from "~/lib/utils/ai/embeddings";
+import DataLoader from "~/lib/utils/ai/data-loader";
+
+export async function load(
+	env: Bindings,
+	inputData: unknown
 ): Promise<boolean> {
-  const parsedData = AddKnowledgeSchema.parse(inputData)
+	const parsedData = LoadKnowledgeSchema.parse(inputData);
 
-  const documents: Document[] = await loadDocuments(
-    parsedData.type,
-    parsedData.source,
-  )
+	const documents: Document[] = await getSourceDocuments(
+		parsedData.type,
+		parsedData.source
+	);
 
-  const embeddings = createEmbeddings(env.AI)
-  const vectorStore = createVectorStore(embeddings, env.KNOWLEDGE_INDEX)
 
-  const formattedDocuments = formatDocuments(documents)
+	await addDocumentsToStore(env, formattedDocuments);
 
-  await addDocumentsToStore(vectorStore, formattedDocuments)
-
-  return true
+	return true;
 }
 
-async function loadDocuments(
-  type: string,
-  source: string | File,
+async function processSitemap(env: Bindings, sitemap: string) {}
+
+async function getSourceDocuments(
+	type: string,
+	source: string | File,
+	customMetadata?: Record<string, any>
 ): Promise<Document[]> {
-  try {
-    switch (type) {
-      case 'url':
-        return await KnowledgeLoader.loadUrl(source as string)
-      case 'pdf':
-        return await KnowledgeLoader.loadPdf(source as File)
-      default:
-        throw new Error('Unsupported knowledge type')
-    }
-  }
-  catch (error) {
-    throw new Error('Failed to load documents')
-  }
-}
+	try {
+		let documents: Document[] = [];
 
-function createEmbeddings(binding: any): CloudflareWorkersAIEmbeddings {
-  return new CloudflareWorkersAIEmbeddings({
-    binding,
-    model: '@cf/baai/bge-small-en-v1.5',
-  })
-}
+		switch (type) {
+			case "url":
+				documents = await DataLoader.url(source as string);
+			case "pdf":
+				documents = await DataLoader.pdf(source as File);
+		}
 
-function createVectorStore(
-  embeddings: CloudflareWorkersAIEmbeddings,
-  index: VectorizeIndex,
-): CloudflareVectorizeStore {
-  return new CloudflareVectorizeStore(embeddings, {
-    index,
-  })
-}
-
-function formatDocuments(documents: Document[]): Document[] {
-  return documents.map(doc => ({
-    pageContent: doc.pageContent,
-    metadata: {},
-  }))
-}
-
-async function addDocumentsToStore(
-  store: CloudflareVectorizeStore,
-  documents: Document[],
-): Promise<void> {
-  try {
-    await store.addDocuments(documents)
-  }
-  catch (error) {
-    throw new Error('Failed to add documents to the store')
-  }
+		return documents.map((doc) => ({
+			pageContent: doc.pageContent,
+			metadata: {
+				...doc.metadata,
+        ...customMetadata
+			},
+		}));
+	} catch (error) {
+		throw new Error("Failed to load documents");
+	}
 }

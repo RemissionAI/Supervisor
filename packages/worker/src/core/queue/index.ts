@@ -1,5 +1,5 @@
 import type { Bindings } from '~/common/interfaces/common.interface'
-import { PushQueueTrainingTask } from '~/common/interfaces/train.interface'
+import type { PushQueueTrainingTask } from '~/common/interfaces/train.interface'
 
 export default async function queue(
   batch: MessageBatch<PushQueueTrainingTask>,

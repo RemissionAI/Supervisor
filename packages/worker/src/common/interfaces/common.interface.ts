@@ -1,16 +1,16 @@
-import { PushQueueTrainingTask } from "./train.interface";
+import type { PushQueueTrainingTask } from './train.interface'
 
 export type Bindings = {
-	ENVIRONMENT: "dev" | "staging" | "production";
-	SUPERVISOR_KV: KVNamespace;
-	SUPERVISOR_BUCKET: R2Bucket;
-	KNOWLEDGE_INDEX: VectorizeIndex;
-	AI: Fetcher;
+  ENVIRONMENT: 'dev' | 'staging' | 'production'
+  SUPERVISOR_KV: KVNamespace
+  SUPERVISOR_BUCKET: R2Bucket
+  KNOWLEDGE_INDEX: VectorizeIndex
+  AI: Ai
   SUPERVISOR_DB: D1Database
   SUPERVISOR_TRAINING_QUEUE: Queue<PushQueueTrainingTask>
-};
+}
 
-export type Environment = {
+export type  Environment = {
   Bindings: Bindings
 }
 

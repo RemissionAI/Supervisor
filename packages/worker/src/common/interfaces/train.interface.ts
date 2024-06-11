@@ -1,5 +1,4 @@
-import type { z } from 'zod'
-import type { BaseTrainingTaskSchema, InsertTrainingTaskSchema, UpdateTrainingTaskSchema } from '~/lib/validations/train.validation'
+import type { trainingTasks } from '~/config/db/schema'
 
 export enum TaskStatus {
   Queued = 'queued',
@@ -19,6 +18,6 @@ export interface PushQueueTrainingTask {
   source: string
 }
 
-export type TrainingTask = z.infer<typeof BaseTrainingTaskSchema>
-export type InsertTrainingTask = z.infer<typeof InsertTrainingTaskSchema>
-export type UpdateTrainingTask = z.infer<typeof UpdateTrainingTaskSchema>
+export type TrainingTask = typeof trainingTasks.$inferSelect
+export type InsertTrainingTask = typeof trainingTasks.$inferInsert
+export type UpdateTrainingTask = Pick<TrainingTask, 'status' | 'details' | 'finishedAt'>
