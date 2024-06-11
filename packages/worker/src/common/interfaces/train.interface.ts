@@ -7,6 +7,8 @@ export enum TaskStatus {
   Failed = 'failed',
 }
 
+export const TaskStatusTypes = ["queued", "processing", "completed", "failed"] as const;
+
 export interface TrainingTaskDetails {
   error?: string
 }

@@ -21,7 +21,7 @@ export class TrainingTaskRepository extends BaseRepository {
    * @param task - The training task to be inserted.
    * @returns The inserted training task.
    */
-  async insertTrainingTask(task: InsertTrainingTask): Promise<TrainingTaskModel> {
+  async insert(task: InsertTrainingTask): Promise<TrainingTaskModel> {
     try {
       const result = await this.db
         .insert(this.trainingTaskTable)
@@ -42,7 +42,7 @@ export class TrainingTaskRepository extends BaseRepository {
    * @param pageSize - The number of tasks per page.
    * @returns A list of training tasks for the specified page.
    */
-  async listTrainingTasks(
+  async list(
     page: number,
     pageSize: number,
   ): Promise<TrainingTaskModel[]> {
@@ -69,7 +69,7 @@ export class TrainingTaskRepository extends BaseRepository {
    * @param updatedTask - The updated training task data.
    * @returns The updated training task.
    */
-  async updateTrainingTask(
+  async update(
     id: number,
     updatedTask: Partial<UpdateTrainingTask>,
   ): Promise<TrainingTaskModel> {

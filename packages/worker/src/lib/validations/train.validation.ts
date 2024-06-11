@@ -1,7 +1,7 @@
 import z from 'zod'
 import validPDF from './refines/validPDF.refine'
 
-export const LoadKnowledgeSchema = z.discriminatedUnion('type', [
+export const KnowledgeTypeSchema = z.discriminatedUnion('type', [
   z.object({
     type: z.literal('url'),
     source: z.string().url(),
@@ -15,3 +15,9 @@ export const LoadKnowledgeSchema = z.discriminatedUnion('type', [
     source: z.string().url()
   })
 ])
+
+export type KnowledgeMeta = z.infer<typeof KnowledgeTypeSchema>;
+
+export const LoadKnowledgeSchema = z.object({
+  data: z.array(KnowledgeTypeSchema)
+})
