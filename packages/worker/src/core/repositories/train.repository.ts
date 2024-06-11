@@ -1,5 +1,5 @@
 import { asc, eq } from 'drizzle-orm'
-import { TrainingTask } from '../models/train.model'
+import { TrainingTaskModel } from '../models/train.model'
 import { BaseRepository } from './base.repository'
 import { trainingTasks } from '~/config/db/schema'
 import type { Bindings } from '~/common/interfaces/common.interface'
@@ -21,7 +21,7 @@ export class TrainingTaskRepository extends BaseRepository {
    * @param task - The training task to be inserted.
    * @returns The inserted training task.
    */
-  async insertTrainingTask(task: InsertTrainingTask): Promise<TrainingTask> {
+  async insertTrainingTask(task: InsertTrainingTask): Promise<TrainingTaskModel> {
     try {
       const result = await this.db
         .insert(this.trainingTaskTable)
@@ -29,7 +29,7 @@ export class TrainingTaskRepository extends BaseRepository {
         .returning()
         .get()
 
-      return new TrainingTask(result)
+      return new TrainingTaskModel(result)
     }
     catch (err) {
       throw new Error(`Error creating training task: ${err}`)
@@ -45,7 +45,7 @@ export class TrainingTaskRepository extends BaseRepository {
   async listTrainingTasks(
     page: number,
     pageSize: number,
-  ): Promise<TrainingTask[]> {
+  ): Promise<TrainingTaskModel[]> {
     try {
       const query = this.db.select().from(this.trainingTaskTable)
 
@@ -56,7 +56,7 @@ export class TrainingTaskRepository extends BaseRepository {
         pageSize,
       )
 
-      return paginatedResults.map(result => new TrainingTask(result))
+      return paginatedResults.map(result => new TrainingTaskModel(result))
     }
     catch (err) {
       throw new Error(`Error fetching training tasks: ${err}`)
@@ -72,7 +72,7 @@ export class TrainingTaskRepository extends BaseRepository {
   async updateTrainingTask(
     id: number,
     updatedTask: Partial<UpdateTrainingTask>,
-  ): Promise<TrainingTask> {
+  ): Promise<TrainingTaskModel> {
     try {
       const result = await this.db
         .update(this.trainingTaskTable)
@@ -81,7 +81,7 @@ export class TrainingTaskRepository extends BaseRepository {
         .returning()
         .get()
 
-      return new TrainingTask(result)
+      return new TrainingTaskModel(result)
     }
     catch (err) {
       throw new Error(`Error updating training task: ${err}`)

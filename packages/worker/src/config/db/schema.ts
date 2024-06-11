@@ -11,3 +11,13 @@ export const trainingTasks = sqliteTable('training_tasks', {
   startedAt: integer('started_at', { mode: 'timestamp' }).notNull(),
   finishedAt: integer('finisehd_at', { mode: 'timestamp' }),
 })
+export const knowledge = sqliteTable("knowledge", {
+	id: integer("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
+	task_id: integer("task_id")
+		.notNull()
+		.references(() => trainingTasks.id),
+	type: text("type").notNull(),
+	source: text('source').notNull(),
+	createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
+	updatedAt: integer("updated_at", { mode: "timestamp" }).notNull(),
+});
