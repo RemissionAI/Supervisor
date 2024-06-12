@@ -1,6 +1,6 @@
+import { processTaskQueue } from '../services/train.service'
 import type { Bindings } from '~/common/interfaces/common.interface'
 import type { PushQueueTrainingTask } from '~/common/interfaces/train.interface'
-import { processTask, processTaskQueue } from '../services/train.service'
 
 export default async function queue(
   batch: MessageBatch<PushQueueTrainingTask>,
@@ -13,7 +13,7 @@ export default async function queue(
       console.log(`processing queue ${JSON.stringify(body)}`)
       await processTaskQueue(env, body.taskId, body.data)
 
-      console.log(`finished processing`);
+      console.log(`finished processing`)
       message.ack()
     }
     catch (err) {

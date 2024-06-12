@@ -1,15 +1,11 @@
 import type { Document } from 'langchain/document'
-import type {
-  KnowledgeMeta,
-} from '~/lib/validations/train.validation'
-import {
-  LoadKnowledgeSchema,
-} from '~/lib/validations/train.validation'
+import { KnowledgeRepository } from '../repositories/knowledge.repository'
+import type { KnowledgeMeta } from '~/lib/validations/train.validation'
+import { LoadKnowledgeSchema } from '~/lib/validations/train.validation'
 import type { Bindings } from '~/common/interfaces/common.interface'
 import { addDocumentsToStore } from '~/lib/utils/ai/embeddings'
 import DataLoader from '~/lib/utils/ai/data-loader'
 import { TrainingTaskRepository } from '~/core/repositories/train.repository'
-import { KnowledgeRepository } from '../repositories/knowledge.repository'
 
 export async function processTask(
   env: Bindings,
@@ -34,7 +30,7 @@ export async function processTask(
       details: {
         error: errorMessage,
       },
-      finishedAt: new Date()
+      finishedAt: new Date(),
     })
   }
 }
@@ -63,8 +59,7 @@ async function handleKnowledge(
   type: 'url' | 'pdf',
   source: string | File,
 ) {
-  const knowledgeRepo = new KnowledgeRepository(env);
-
+  const knowledgeRepo = new KnowledgeRepository(env)
 
   const documents = await fetchSourceDocuments(type, source, { taskId })
   await addDocumentsToStore(env, documents)
@@ -75,19 +70,28 @@ async function handleKnowledge(
     content: documents.map(content => content.pageContent).join('\n---\n'),
     source: typeof source === 'string' ? source : source.name,
     createdAt: new Date(),
-  });
+  })
 }
 
 async function handleSitemap(
   env: Bindings,
   taskId: number,
   sitemapUrl: string,
-) {  
+) {
   const links = await DataLoader.sitemap(sitemapUrl)
-  const fetchPromises = links.map(link =>
-    handleKnowledge(env, taskId, 'url', link.loc),
+  const results = await Promise.allSettled(
+    links.map(link => handleKnowledge(env, taskId, 'url', link.loc)),
   )
-  await Promise.all(fetchPromises)
+
+  const failedLinks = results
+    .filter(result => result.status === 'rejected')
+    .map((result, index) => links[index].loc)
+
+  if (failedLinks.length > 0) {
+    console.error(
+			`Failed to process the following links: ${failedLinks.join(', ')}`,
+    )
+  }
 }
 
 export async function queueTask(env: Bindings, inputData: unknown) {
@@ -106,8 +110,12 @@ export async function queueTask(env: Bindings, inputData: unknown) {
   })
 }
 
-export async function processTaskQueue(env: Bindings, taskId: number, data: KnowledgeMeta[]){
-  await Promise.all(data.map((data) => processTask(env, taskId, data)));
+export async function processTaskQueue(
+  env: Bindings,
+  taskId: number,
+  data: KnowledgeMeta[],
+) {
+  await Promise.all(data.map(data => processTask(env, taskId, data)))
 }
 
 async function fetchSourceDocuments(
