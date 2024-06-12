@@ -15,7 +15,7 @@ export const trainingTasks = sqliteTable('training_tasks', {
   finishedAt: integer('finisehd_at', { mode: 'timestamp' }),
 })
 
-export const knowledge = sqliteTable('knowledge', {
+export const knowledge = sqliteTable('knowledge_index', {
   id: integer('id', { mode: 'number' }).primaryKey({ autoIncrement: true }),
   taskId: integer('task_id')
     .notNull()
