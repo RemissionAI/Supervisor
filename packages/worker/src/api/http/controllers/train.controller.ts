@@ -4,7 +4,7 @@ import ResponseHandler from '~/lib/utils/response-handler'
 import { TrainingTaskRepository } from '~/core/repositories/train.repository'
 
 export async function load(c: Context) {
-  const body = await c.req.parseBody()
+  const body = await c.req.json()
 
   await TrainService.queueTask(c.env, body)
 
