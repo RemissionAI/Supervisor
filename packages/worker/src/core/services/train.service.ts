@@ -87,7 +87,7 @@ export async function queueTask(env: Bindings, inputData: unknown) {
     startedAt: new Date(),
   })
 
-  env.SUPERVISOR_TRAINING_QUEUE.send({
+  await env.SUPERVISOR_TRAINING_QUEUE.send({
     taskId: newTask.id,
     data: validatedData.data,
   })
