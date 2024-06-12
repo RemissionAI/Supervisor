@@ -8,8 +8,9 @@ export class KnowledgeModel extends BaseModel {
   taskId: number
   type: string
   source: string
-  createdAt: Date
-  updatedAt: Date
+  content: string | null
+  createdAt: Date | null
+  updatedAt: Date | null
 
   private_fields = []
 
@@ -19,6 +20,7 @@ export class KnowledgeModel extends BaseModel {
     this.taskId = knowledge.taskId
     this.type = knowledge.type
     this.source = knowledge.source
+    this.content = knowledge.content
     this.createdAt = knowledge.createdAt
     this.updatedAt = knowledge.updatedAt
   }

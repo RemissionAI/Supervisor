@@ -22,6 +22,7 @@ export const knowledge = sqliteTable('knowledge', {
     .references(() => trainingTasks.id),
   type: text('type').notNull(),
   source: text('source').notNull(),
-  createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
-  updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull(),
+  content: text('content'),
+  createdAt: integer('created_at', { mode: 'timestamp' }),
+  updatedAt: integer('updated_at', { mode: 'timestamp' }),
 })

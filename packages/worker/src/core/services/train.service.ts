@@ -9,6 +9,7 @@ import type { Bindings } from '~/common/interfaces/common.interface'
 import { addDocumentsToStore } from '~/lib/utils/ai/embeddings'
 import DataLoader from '~/lib/utils/ai/data-loader'
 import { TrainingTaskRepository } from '~/core/repositories/train.repository'
+import { KnowledgeRepository } from '../repositories/knowledge.repository'
 
 export async function processTask(
   env: Bindings,
@@ -62,15 +63,26 @@ async function handleKnowledge(
   type: 'url' | 'pdf',
   source: string | File,
 ) {
+  const knowledgeRepo = new KnowledgeRepository(env);
+
+
   const documents = await fetchSourceDocuments(type, source, { taskId })
   await addDocumentsToStore(env, documents)
+
+  await knowledgeRepo.insert({
+    type,
+    taskId,
+    content: documents.map(content => content.pageContent).join('\n---\n'),
+    source: typeof source === 'string' ? source : source.name,
+    createdAt: new Date(),
+  });
 }
 
 async function handleSitemap(
   env: Bindings,
   taskId: number,
   sitemapUrl: string,
-) {
+) {  
   const links = await DataLoader.sitemap(sitemapUrl)
   const fetchPromises = links.map(link =>
     handleKnowledge(env, taskId, 'url', link.loc),
