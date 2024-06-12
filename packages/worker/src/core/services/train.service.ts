@@ -93,6 +93,10 @@ export async function queueTask(env: Bindings, inputData: unknown) {
   })
 }
 
+export async function processTaskQueue(env: Bindings, taskId: number, data: KnowledgeMeta[]){
+  await Promise.all(data.map((data) => processTask(env, taskId, data)));
+}
+
 async function fetchSourceDocuments(
   type: 'url' | 'pdf',
   source: string | File,

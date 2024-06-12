@@ -1,0 +1,1 @@
+ALTER TABLE `training_tasks` DROP COLUMN `text`;
