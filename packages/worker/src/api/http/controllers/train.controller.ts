@@ -16,7 +16,7 @@ export async function load(c: Context) {
 export async function list(c: Context) {
   const trainingRepo = new TrainingTaskRepository(c.env)
 
-  const data = await trainingRepo.list(1, 10)
+  const data = await trainingRepo.list(1, 100)
 
   return ResponseHandler.success(c, data)
 }
