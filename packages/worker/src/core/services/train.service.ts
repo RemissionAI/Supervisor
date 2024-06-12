@@ -33,6 +33,7 @@ export async function processTask(
       details: {
         error: errorMessage,
       },
+      finishedAt: new Date()
     })
   }
 }
@@ -107,7 +108,7 @@ async function fetchSourceDocuments(
     return documents.map(doc => ({
       pageContent: doc.pageContent,
       metadata: {
-        ...doc.metadata,
+        docMeta: JSON.stringify(doc.metadata),
         ...customMetadata,
       },
     }))
