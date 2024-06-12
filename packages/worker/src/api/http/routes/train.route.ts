@@ -4,6 +4,5 @@ import * as TrainController from '~/api/http/controllers/train.controller'
 
 export const route = new Hono<Environment>()
 
-route.post('/', TrainController.train)
-route.post('/insert', TrainController.insert)
+route.post('/load', TrainController.load)
 route.get('/list', TrainController.list)

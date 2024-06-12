@@ -10,7 +10,7 @@ export type Bindings = {
   SUPERVISOR_TRAINING_QUEUE: Queue<PushQueueTrainingTask>
 }
 
-export type  Environment = {
+export type Environment = {
   Bindings: Bindings
 }
 

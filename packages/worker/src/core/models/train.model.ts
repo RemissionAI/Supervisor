@@ -1,6 +1,6 @@
-import { KnowledgeMeta } from '~/lib/validations/train.validation'
 import { BaseModel } from './base.model'
-import type { TrainingTask, TrainingTaskDetails} from '~/common/interfaces/train.interface'
+import type { KnowledgeMeta } from '~/lib/validations/train.validation'
+import type { TrainingTask, TrainingTaskDetails } from '~/common/interfaces/train.interface'
 
 export class TrainingTaskModel extends BaseModel {
   id: number

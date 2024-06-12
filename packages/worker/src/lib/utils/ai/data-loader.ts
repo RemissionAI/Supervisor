@@ -3,7 +3,7 @@ import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter'
 import { CheerioWebBaseLoader } from '@langchain/community/document_loaders/web/cheerio'
 import { HtmlToTextTransformer } from '@langchain/community/document_transformers/html_to_text'
 import { WebPDFLoader } from '@langchain/community/document_loaders/web/pdf'
-import { SitemapLoader } from "@langchain/community/document_loaders/web/sitemap";
+import { SitemapLoader } from '@langchain/community/document_loaders/web/sitemap'
 
 export interface Loader {
   /**

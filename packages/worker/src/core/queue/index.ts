@@ -9,7 +9,7 @@ export default async function queue(
     const body = message.body
 
     try {
-		    console.log('processing queue')
+      console.log(`processing queue ${JSON.stringify(body)}`)
       message.ack()
     }
     catch (err) {

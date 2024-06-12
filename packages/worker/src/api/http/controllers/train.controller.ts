@@ -3,12 +3,14 @@ import * as TrainService from '~/core/services/train.service'
 import ResponseHandler from '~/lib/utils/response-handler'
 import { TrainingTaskRepository } from '~/core/repositories/train.repository'
 
-export async function train(c: Context) {
+export async function load(c: Context) {
   const body = await c.req.parseBody()
 
-  const res = await TrainService.loadKnowledge(c.env, body)
+  await TrainService.queueTask(c.env, body)
 
-  return ResponseHandler.success(c, res)
+  return ResponseHandler.success(c, {
+    message: 'task queued',
+  })
 }
 
 export async function list(c: Context) {

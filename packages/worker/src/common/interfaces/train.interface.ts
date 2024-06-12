@@ -1,4 +1,5 @@
 import type { trainingTasks } from '~/config/db/schema'
+import type { KnowledgeMeta } from '~/lib/validations/train.validation'
 
 export enum TaskStatus {
   Queued = 'queued',
@@ -7,7 +8,7 @@ export enum TaskStatus {
   Failed = 'failed',
 }
 
-export const TaskStatusTypes = ["queued", "processing", "completed", "failed"] as const;
+export const TaskStatusTypes = ['queued', 'processing', 'completed', 'failed'] as const
 
 export interface TrainingTaskDetails {
   error?: string
@@ -16,8 +17,8 @@ export interface TrainingTaskDetails {
 export type AllowedTrainingSource = 'url' | 'sitemap' | 'pdf' | string[]
 
 export interface PushQueueTrainingTask {
-  type: AllowedTrainingSource
-  source: string
+  taskId: number
+  data: KnowledgeMeta[]
 }
 
 export type TrainingTask = typeof trainingTasks.$inferSelect

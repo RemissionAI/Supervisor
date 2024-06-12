@@ -12,12 +12,12 @@ export const KnowledgeTypeSchema = z.discriminatedUnion('type', [
   }),
   z.object({
     type: z.literal('sitemap'),
-    source: z.string().url()
-  })
+    source: z.string().url(),
+  }),
 ])
 
-export type KnowledgeMeta = z.infer<typeof KnowledgeTypeSchema>;
+export type KnowledgeMeta = z.infer<typeof KnowledgeTypeSchema>
 
 export const LoadKnowledgeSchema = z.object({
-  data: z.array(KnowledgeTypeSchema)
+  data: z.array(KnowledgeTypeSchema),
 })
