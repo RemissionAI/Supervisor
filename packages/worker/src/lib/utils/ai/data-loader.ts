@@ -3,27 +3,28 @@ import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter'
 import { CheerioWebBaseLoader } from '@langchain/community/document_loaders/web/cheerio'
 import { HtmlToTextTransformer } from '@langchain/community/document_transformers/html_to_text'
 import { WebPDFLoader } from '@langchain/community/document_loaders/web/pdf'
+import { SitemapLoader } from '@langchain/community/document_loaders/web/sitemap'
 
-export interface IKnowledgeLoader {
+export interface Loader {
   /**
    * Loads documents from the given URL.
    * @param url - The URL to load documents from.
    * @returns A promise that resolves to an array of documents.
    */
-  loadUrl: (url: string) => Promise<Document[]>
+  url: (url: string) => Promise<Document[]>
   /**
    * Loads documents from the given PDF.
    * @param blob - The PDF blob to load documents from.
    * @returns A promise that resolves to an array of documents.
    */
-  loadPdf: (file: File) => Promise<Document[]>
+  pdf: (file: File) => Promise<Document[]>
 }
 
 /**
  * Loads content from different sources (URL, PDF) to be used for embeddings.
  */
-class KnowledgeLoader implements IKnowledgeLoader {
-  async loadUrl(url: string): Promise<Document[]> {
+class DataLoader implements Loader {
+  async url(url: string): Promise<Document[]> {
     const loader = new CheerioWebBaseLoader(url)
     const rawDocs = await loader.load()
 
@@ -34,7 +35,7 @@ class KnowledgeLoader implements IKnowledgeLoader {
     return await sequence.invoke(rawDocs)
   }
 
-  async loadPdf(file: File): Promise<Document[]> {
+  async pdf(file: File): Promise<Document[]> {
     const loader = new WebPDFLoader(file, {
       parsedItemSeparator: '',
       pdfjs: async () => {
@@ -53,6 +54,12 @@ class KnowledgeLoader implements IKnowledgeLoader {
 
     return await splitter.splitDocuments(rawDocs)
   }
+
+  async sitemap(url: string) {
+    const loader = new SitemapLoader(url)
+
+    return await loader.parseSitemap()
+  }
 }
 
-export default new KnowledgeLoader()
+export default new DataLoader()

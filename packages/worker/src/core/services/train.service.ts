@@ -1,83 +1,148 @@
 import type { Document } from 'langchain/document'
+import type {
+  KnowledgeMeta,
+} from '~/lib/validations/train.validation'
 import {
-  CloudflareVectorizeStore,
-  CloudflareWorkersAIEmbeddings,
-} from '@langchain/cloudflare'
-import { AddKnowledgeSchema } from '~/lib/validations/train.validation'
-import KnowledgeLoader from '~/lib/utils/knowledge-loader'
+  LoadKnowledgeSchema,
+} from '~/lib/validations/train.validation'
 import type { Bindings } from '~/common/interfaces/common.interface'
+import { addDocumentsToStore } from '~/lib/utils/ai/embeddings'
+import DataLoader from '~/lib/utils/ai/data-loader'
+import { TrainingTaskRepository } from '~/core/repositories/train.repository'
+import { KnowledgeRepository } from '../repositories/knowledge.repository'
 
-export async function loadKnowledge(
+export async function processTask(
   env: Bindings,
-  inputData: unknown,
-): Promise<boolean> {
-  const parsedData = AddKnowledgeSchema.parse(inputData)
+  taskId: number,
+  metadata: KnowledgeMeta,
+) {
+  const taskRepo = new TrainingTaskRepository(env)
 
-  const documents: Document[] = await loadDocuments(
-    parsedData.type,
-    parsedData.source,
+  await taskRepo.update(taskId, { status: 'processing' })
+
+  try {
+    await handleTaskByType(env, taskId, metadata)
+    await taskRepo.update(taskId, {
+      status: 'completed',
+      finishedAt: new Date(),
+    })
+  }
+  catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error)
+    await taskRepo.update(taskId, {
+      status: 'failed',
+      details: {
+        error: errorMessage,
+      },
+      finishedAt: new Date()
+    })
+  }
+}
+
+async function handleTaskByType(
+  env: Bindings,
+  taskId: number,
+  metadata: KnowledgeMeta,
+) {
+  switch (metadata.type) {
+    case 'url':
+    case 'pdf':
+      await handleKnowledge(env, taskId, metadata.type, metadata.source)
+      break
+    case 'sitemap':
+      await handleSitemap(env, taskId, metadata.source)
+      break
+    default:
+      throw new Error(`Unsupported data type`)
+  }
+}
+
+async function handleKnowledge(
+  env: Bindings,
+  taskId: number,
+  type: 'url' | 'pdf',
+  source: string | File,
+) {
+  const knowledgeRepo = new KnowledgeRepository(env);
+
+
+  const documents = await fetchSourceDocuments(type, source, { taskId })
+  await addDocumentsToStore(env, documents)
+
+  await knowledgeRepo.insert({
+    type,
+    taskId,
+    content: documents.map(content => content.pageContent).join('\n---\n'),
+    source: typeof source === 'string' ? source : source.name,
+    createdAt: new Date(),
+  });
+}
+
+async function handleSitemap(
+  env: Bindings,
+  taskId: number,
+  sitemapUrl: string,
+) {  
+  const links = await DataLoader.sitemap(sitemapUrl)
+  const fetchPromises = links.map(link =>
+    handleKnowledge(env, taskId, 'url', link.loc),
   )
+  await Promise.all(fetchPromises)
+}
 
-  const embeddings = createEmbeddings(env.AI)
-  const vectorStore = createVectorStore(embeddings, env.KNOWLEDGE_INDEX)
+export async function queueTask(env: Bindings, inputData: unknown) {
+  const validatedData = LoadKnowledgeSchema.parse(inputData)
+  const taskRepo = new TrainingTaskRepository(env)
 
-  const formattedDocuments = formatDocuments(documents)
+  const newTask = await taskRepo.insert({
+    data: validatedData.data,
+    status: 'queued',
+    startedAt: new Date(),
+  })
 
-  await addDocumentsToStore(vectorStore, formattedDocuments)
+  await env.SUPERVISOR_TRAINING_QUEUE.send({
+    taskId: newTask.id,
+    data: validatedData.data,
+  })
+}
 
-  return true
+export async function processTaskQueue(env: Bindings, taskId: number, data: KnowledgeMeta[]){
+  await Promise.all(data.map((data) => processTask(env, taskId, data)));
+}
+
+async function fetchSourceDocuments(
+  type: 'url' | 'pdf',
+  source: string | File,
+  customMetadata?: Record<string, any>,
+): Promise<Document[]> {
+  try {
+    const documents = await loadDocuments(type, source)
+    return documents.map(doc => ({
+      pageContent: doc.pageContent,
+      metadata: {
+        docMeta: JSON.stringify(doc.metadata),
+        ...customMetadata,
+      },
+    }))
+  }
+  catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error)
+    throw new Error(
+			`Failed to load documents of type ${type}: ${errorMessage}`,
+    )
+  }
 }
 
 async function loadDocuments(
-  type: string,
+  type: 'url' | 'pdf',
   source: string | File,
 ): Promise<Document[]> {
-  try {
-    switch (type) {
-      case 'url':
-        return await KnowledgeLoader.loadUrl(source as string)
-      case 'pdf':
-        return await KnowledgeLoader.loadPdf(source as File)
-      default:
-        throw new Error('Unsupported knowledge type')
-    }
-  }
-  catch (error) {
-    throw new Error('Failed to load documents')
-  }
-}
-
-function createEmbeddings(binding: any): CloudflareWorkersAIEmbeddings {
-  return new CloudflareWorkersAIEmbeddings({
-    binding,
-    model: '@cf/baai/bge-small-en-v1.5',
-  })
-}
-
-function createVectorStore(
-  embeddings: CloudflareWorkersAIEmbeddings,
-  index: VectorizeIndex,
-): CloudflareVectorizeStore {
-  return new CloudflareVectorizeStore(embeddings, {
-    index,
-  })
-}
-
-function formatDocuments(documents: Document[]): Document[] {
-  return documents.map(doc => ({
-    pageContent: doc.pageContent,
-    metadata: {},
-  }))
-}
-
-async function addDocumentsToStore(
-  store: CloudflareVectorizeStore,
-  documents: Document[],
-): Promise<void> {
-  try {
-    await store.addDocuments(documents)
-  }
-  catch (error) {
-    throw new Error('Failed to add documents to the store')
+  switch (type) {
+    case 'url':
+      return await DataLoader.url(source as string)
+    case 'pdf':
+      return await DataLoader.pdf(source as File)
+    default:
+      throw new Error(`Unsupported document type: ${type}`)
   }
 }

@@ -1,9 +1,7 @@
 import z from 'zod'
-import { createInsertSchema, createSelectSchema } from 'drizzle-zod'
 import validPDF from './refines/validPDF.refine'
-import { trainingTasks } from '~/config/db/schema'
 
-export const AddKnowledgeSchema = z.discriminatedUnion('type', [
+export const KnowledgeTypeSchema = z.discriminatedUnion('type', [
   z.object({
     type: z.literal('url'),
     source: z.string().url(),
@@ -12,12 +10,14 @@ export const AddKnowledgeSchema = z.discriminatedUnion('type', [
     type: z.literal('pdf'),
     source: validPDF,
   }),
+  z.object({
+    type: z.literal('sitemap'),
+    source: z.string().url(),
+  }),
 ])
 
-export const BaseTrainingTaskSchema = createSelectSchema(trainingTasks)
-export const InsertTrainingTaskSchema = createInsertSchema(trainingTasks)
-export const UpdateTrainingTaskSchema = InsertTrainingTaskSchema.pick({
-  status: true,
-  details: true,
-  finishedAt: true,
+export type KnowledgeMeta = z.infer<typeof KnowledgeTypeSchema>
+
+export const LoadKnowledgeSchema = z.object({
+  data: z.array(KnowledgeTypeSchema),
 })

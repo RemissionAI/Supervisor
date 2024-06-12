@@ -1,22 +1,21 @@
 import { BaseModel } from './base.model'
-import type { IAllowedTrainingSource, ITrainingTask, ITrainingTaskDetails } from '~/common/interfaces/train.interface'
+import type { KnowledgeMeta } from '~/lib/validations/train.validation'
+import type { TrainingTask, TrainingTaskDetails } from '~/common/interfaces/train.interface'
 
-export class TrainingTask extends BaseModel {
+export class TrainingTaskModel extends BaseModel {
   id: number
-  type: IAllowedTrainingSource
-  source: string
+  data: KnowledgeMeta[]
   status: string
-  details: ITrainingTaskDetails | null
+  details: TrainingTaskDetails | null
   startedAt: Date
   finishedAt: Date | null
 
   private_fields = []
 
-  constructor(task: ITrainingTask) {
+  constructor(task: TrainingTask) {
     super()
     this.id = task.id
-    this.type = task.type
-    this.source = task.source
+    this.data = task.data
     this.status = task.status
     this.details = task.details
     this.startedAt = task.startedAt

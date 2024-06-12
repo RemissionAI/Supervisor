@@ -15,6 +15,41 @@
       "when": 1717584076968,
       "tag": "0001_white_iron_lad",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1718098229506,
+      "tag": "0002_sparkling_rockslide",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1718100069528,
+      "tag": "0003_brown_electro",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1718177539141,
+      "tag": "0004_lively_terror",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1718180250223,
+      "tag": "0005_certain_trish_tilby",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1718180562392,
+      "tag": "0006_gray_siren",
+      "breakpoints": true
     }
   ]
 }

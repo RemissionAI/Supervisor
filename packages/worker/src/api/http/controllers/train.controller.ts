@@ -3,34 +3,20 @@ import * as TrainService from '~/core/services/train.service'
 import ResponseHandler from '~/lib/utils/response-handler'
 import { TrainingTaskRepository } from '~/core/repositories/train.repository'
 
-export async function train(c: Context) {
-  const body = await c.req.parseBody()
+export async function load(c: Context) {
+  const body = await c.req.json()
 
-  const res = await TrainService.loadKnowledge(c.env, body)
+  await TrainService.queueTask(c.env, body)
 
-  return ResponseHandler.success(c, res)
-}
-
-export async function insert(c: Context) {
-  const trainingRepo = new TrainingTaskRepository(c.env)
-
-  const data = await trainingRepo.insertTrainingTask({
-    type: 'url',
-    source: 'https://kaleidoscopefightinglupus.org',
-    status: 'queued',
-    details: {
-      err: 'hi',
-    },
-    startedAt: new Date(),
+  return ResponseHandler.success(c, {
+    message: 'task queued',
   })
-
-  return ResponseHandler.success(c, data)
 }
 
 export async function list(c: Context) {
   const trainingRepo = new TrainingTaskRepository(c.env)
 
-  const data = await trainingRepo.listTrainingTasks(1, 10)
+  const data = await trainingRepo.list(1, 100)
 
   return ResponseHandler.success(c, data)
 }
