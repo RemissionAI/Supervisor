@@ -1,6 +1,7 @@
 import type { VectorStore } from '@langchain/core/vectorstores'
 import type { BaseLanguageModel } from '@langchain/core/language_models/base'
 import type { Document } from '@langchain/core/documents'
+import { ScoreThresholdRetriever } from "langchain/retrievers/score_threshold";
 
 import {
   ChatPromptTemplate,
@@ -67,8 +68,8 @@ export function createConversationalRetrievalChain({
   aiKnowledgeVectorstore: VectorStore
 }) {
   const aiKnowledgeRetriever = aiKnowledgeVectorstore
-    .asRetriever()
-    .withConfig({ runName: 'AIKnowledgeRetriever' })
+		.asRetriever()
+		.withConfig({ runName: "AIKnowledgeRetriever" })
 
   const retrievalChain = RunnableSequence.from([
     RunnableSequence.from([

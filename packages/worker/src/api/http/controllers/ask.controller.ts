@@ -31,9 +31,9 @@ export async function ask(c: Context) {
   const currentMessage = messages[messages.length - 1]
 
   const embeddings = new CloudflareWorkersAIEmbeddings({
-    binding: c.env.AI,
-    modelName: '@cf/baai/bge-base-en-v1.5',
-  })
+		binding: c.env.AI,
+		modelName: "@cf/baai/bge-small-en-v1.5",
+	});
 
   const aiKnowledgeVectorstore = new CloudflareVectorizeStore(embeddings, {
     index: c.env.KNOWLEDGE_INDEX,
