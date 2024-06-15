@@ -1,7 +1,7 @@
 import type { Document } from 'langchain/document'
 import { KnowledgeRepository } from '../repositories/knowledge.repository'
 import type { KnowledgeMeta } from '~/lib/validations/train.validation'
-import { LoadKnowledgeSchema } from '~/lib/validations/train.validation'
+import { LoadKnowledgeSchema, PdfLoadSchema } from '~/lib/validations/train.validation'
 import type { Bindings } from '~/common/interfaces/common.interface'
 import { addDocumentsToStore } from '~/lib/utils/ai/embeddings'
 import DataLoader from '~/lib/utils/ai/data-loader'
@@ -206,4 +206,67 @@ async function loadDocuments(
       console.error(errorMsg, { type, source })
       throw new Error(errorMsg)
   }
+}
+
+export async function trainWithSinglePdf(env: Bindings, body: unknown) {
+
+  const data = PdfLoadSchema.parse(body)
+
+  const pdfFile = data.source
+
+	console.log(`Training with a single PDF file`, { fileName: pdfFile.name });
+	const taskRepo = new TrainingTaskRepository(env);
+	const knowledgeRepo = new KnowledgeRepository(env);
+
+	const newTask = await taskRepo.insert({
+		data: [
+			{
+				type: "pdf",
+				source: pdfFile.name as unknown as File
+			},
+		],
+		status: "processing",
+		startedAt: new Date(),
+	});
+
+
+	try {
+		const documents = await fetchSourceDocuments("pdf", pdfFile, {
+			taskId: newTask.id,
+		});
+		await addDocumentsToStore(env, documents);
+
+		await knowledgeRepo.insert({
+			type: "pdf",
+			taskId: newTask.id,
+			content: documents.map((content) => content.pageContent).join("\n---\n"),
+			source: pdfFile.name,
+			createdAt: new Date(),
+		});
+
+		await taskRepo.update(newTask.id, {
+			status: "completed",
+			finishedAt: new Date(),
+		});
+
+		console.log(`Completed training with single PDF for task ${newTask.id}`, {
+			taskId: newTask.id,
+		});
+	} catch (error) {
+		const errorMessage = error instanceof Error ? error.message : String(error);
+		await taskRepo.update(newTask.id, {
+			status: "failed",
+			details: {
+				error: errorMessage,
+			},
+			finishedAt: new Date(),
+		});
+
+		console.error(`Failed to train with single PDF for task ${newTask.id}`, {
+			taskId: newTask.id,
+			error: errorMessage,
+		});
+
+		throw error;
+	}
 }

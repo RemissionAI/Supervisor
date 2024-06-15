@@ -21,3 +21,7 @@ export type KnowledgeMeta = z.infer<typeof KnowledgeTypeSchema>
 export const LoadKnowledgeSchema = z.object({
   data: z.array(KnowledgeTypeSchema),
 })
+
+export const PdfLoadSchema = z.object({
+	source: validPDF,
+});
