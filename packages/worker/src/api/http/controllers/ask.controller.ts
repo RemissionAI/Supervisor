@@ -40,7 +40,7 @@ export async function ask(c: Context) {
   })
 
   const cloudflareModel = new ChatCloudflareWorkersAI({
-    model: '@cf/mistral/mistral-7b-instruct-v0.1',
+    model: c.env.DEFAULT_LLM,
     cloudflareAccountId: c.env.CLOUDFLARE_ACCOUNT_ID,
     cloudflareApiToken: c.env.CLOUDFLARE_API_TOKEN,
     verbose: true,

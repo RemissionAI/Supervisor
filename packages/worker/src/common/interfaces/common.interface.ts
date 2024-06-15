@@ -10,6 +10,7 @@ export type Bindings = {
 	SUPERVISOR_TRAINING_QUEUE: Queue<PushQueueTrainingTask>;
 	CLOUDFLARE_ACCOUNT_ID: string;
 	CLOUDFLARE_API_TOKEN: string;
+	DEFAULT_LLM: string;
 };
 
 export type Environment = {
