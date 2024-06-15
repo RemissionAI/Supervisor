@@ -29,18 +29,9 @@ const condenseQuestionPrompt = ChatPromptTemplate.fromMessages([
   ['human', CONDENSE_QUESTION_HUMAN_TEMPLATE],
 ])
 
-const ANSWER_SYSTEM_TEMPLATE = `Your name is Flupus, You are an AI Health supervisor researcher, expert at interpreting and answering questions based on provided sources.
-Using the provided context, answer the user's question to the best of your ability using only the resources provided.
-You must only use information from the provided search results. Use an unbiased and Doctor tone. Combine search results together into a coherent answer. Do not repeat text.
-Anything between the following \`context\` html blocks is retrieved from a knowledge bank, not part of the conversation with the user.
+const ANSWER_SYSTEM_TEMPLATE = `Your name is Flupus, You are an AI Health supervisor researcher.`
 
-<context>
-  {context}
-</context>
-
-REMEMBER: Be concise, and only use facts from the provided context.`
-
-const ANSWER_HUMAN_TEMPLATE = `Answer the following question to the best of your ability. This is extremely important for my health!
+const ANSWER_HUMAN_TEMPLATE = `Answer the following question to the best of your ability:
 
 {standalone_question}`
 
