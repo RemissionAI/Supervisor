@@ -86,14 +86,5 @@ export function createConversationalRetrievalChain({
     model,
   ]).withConfig({ runName: 'AnswerGenerationChain' })
 
-  return RunnableSequence.from([
-    {
-      standalone_question: RunnableBranch.from([
-        [input => input.chat_history.length > 0, standaloneQuestionChain],
-        input => input.question,
-      ]),
-      chat_history: input => input.chat_history,
-    },
-    answerChain,
-  ]).withConfig({ runName: 'ConversationalRetrievalChain' })
+  return answerChain
 }
