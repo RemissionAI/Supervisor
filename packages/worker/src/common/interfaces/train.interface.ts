@@ -12,6 +12,7 @@ export const TaskStatusTypes = ['queued', 'processing', 'completed', 'failed'] a
 
 export interface TrainingTaskDetails {
   error?: string
+  failedLinks?: { url: string, reason?: string }[]
 }
 
 export type AllowedTrainingSource = 'url' | 'sitemap' | 'pdf' | string[]

@@ -5,6 +5,7 @@ on:
     branches:
       - develop
       - feature/*
+      - fix/*
 
 jobs:
   deploy:
@@ -31,6 +32,8 @@ jobs:
           STAGING_DATABASE_ID: ${{ secrets.STAGING_DATABASE_ID }}
           STAGING_DATABASE_NAME: ${{ secrets.STAGING_DATABASE_NAME }}
           STAGING_TRAINING_QUEUE: ${{ secrets.STAGING_TRAINING_QUEUE }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
 
       - name: Publish app
         uses: cloudflare/wrangler-action@v3.6.1
