@@ -34,7 +34,7 @@ export async function ask(c: Context) {
 
 	const embeddings = new CloudflareWorkersAIEmbeddings({
 		binding: c.env.AI,
-		modelName: "@cf/baai/bge-base-en-v1.5",
+		modelName: "@cf/baai/bge-small-en-v1.5",
 	});
 
 	const aiKnowledgeVectorstore = new CloudflareVectorizeStore(embeddings, {
@@ -42,10 +42,10 @@ export async function ask(c: Context) {
 	});
 
 	const cloudflareModel = new ChatCloudflareWorkersAI({
-		model: "@cf/meta/llama-2-7b-chat-fp16",
+		model: "@hf/mistral/mistral-7b-instruct-v0.26",
 		cloudflareAccountId: c.env.CLOUDFLARE_ACCOUNT_ID,
 		cloudflareApiToken: c.env.CLOUDFLARE_API_TOKEN,
-        verbose: true
+		verbose: true,
 	});
 
 	const chain = createConversationalRetrievalChain({
