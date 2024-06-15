@@ -57,6 +57,8 @@ binding = "AI"
 
 [env.staging.vars]
 ENVIRONMENT = "staging"
+CLOUDFLARE_ACCOUNT_ID = "__CF_ACCOUNT_ID__" 
+CLOUDFLARE_API_TOKEN = " __CLOUDFLARE_API_TOKEN__"
 
 [[env.staging.kv_namespaces]]
 binding = "SUPERVISOR_KV"

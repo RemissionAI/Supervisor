@@ -40,7 +40,7 @@ export async function ask(c: Context) {
   })
 
   const cloudflareModel = new ChatCloudflareWorkersAI({
-    model: '@hf/google/gemma-7b-it',
+    model: '@cf/meta/llama-2-7b-chat-fp16',
     cloudflareAccountId: c.env.CLOUDFLARE_ACCOUNT_ID,
     cloudflareApiToken: c.env.CLOUDFLARE_API_TOKEN,
     verbose: true,

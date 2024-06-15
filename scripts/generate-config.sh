@@ -33,6 +33,7 @@ replace_placeholders() {
       -e "s/__${env}_DATABASE_NAME__/${!database_name_var}/g" \
       -e "s/__${env}_DATABASE_ID__/${!database_id_var}/g" \
       -e "s/__${env}_TRAINING_QUEUE__/${!training_queue_var}/g" \
+      -e "s/__CLOUDFLARE_API_TOKEN__/${CLOUDFLARE_API_TOKEN}/g" \
       "$CONFIG_FILE" > "$OUTPUT_FILE"
 }
 
