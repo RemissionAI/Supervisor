@@ -209,64 +209,63 @@ async function loadDocuments(
 }
 
 export async function trainWithSinglePdf(env: Bindings, body: unknown) {
-
   const data = PdfLoadSchema.parse(body)
 
   const pdfFile = data.source
 
-	console.log(`Training with a single PDF file`, { fileName: pdfFile.name });
-	const taskRepo = new TrainingTaskRepository(env);
-	const knowledgeRepo = new KnowledgeRepository(env);
+  console.log(`Training with a single PDF file`, { fileName: pdfFile.name })
+  const taskRepo = new TrainingTaskRepository(env)
+  const knowledgeRepo = new KnowledgeRepository(env)
 
-	const newTask = await taskRepo.insert({
-		data: [
-			{
-				type: "pdf",
-				source: pdfFile.name as unknown as File
-			},
-		],
-		status: "processing",
-		startedAt: new Date(),
-	});
+  const newTask = await taskRepo.insert({
+    data: [
+      {
+        type: 'pdf',
+        source: pdfFile.name as unknown as File,
+      },
+    ],
+    status: 'processing',
+    startedAt: new Date(),
+  })
 
+  try {
+    const documents = await fetchSourceDocuments('pdf', pdfFile, {
+      taskId: newTask.id,
+    })
+    await addDocumentsToStore(env, documents)
 
-	try {
-		const documents = await fetchSourceDocuments("pdf", pdfFile, {
-			taskId: newTask.id,
-		});
-		await addDocumentsToStore(env, documents);
+    await knowledgeRepo.insert({
+      type: 'pdf',
+      taskId: newTask.id,
+      content: documents.map(content => content.pageContent).join('\n---\n'),
+      source: pdfFile.name,
+      createdAt: new Date(),
+    })
 
-		await knowledgeRepo.insert({
-			type: "pdf",
-			taskId: newTask.id,
-			content: documents.map((content) => content.pageContent).join("\n---\n"),
-			source: pdfFile.name,
-			createdAt: new Date(),
-		});
+    await taskRepo.update(newTask.id, {
+      status: 'completed',
+      finishedAt: new Date(),
+    })
 
-		await taskRepo.update(newTask.id, {
-			status: "completed",
-			finishedAt: new Date(),
-		});
+    console.log(`Completed training with single PDF for task ${newTask.id}`, {
+      taskId: newTask.id,
+    })
+  }
+  catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error)
+    await taskRepo.update(newTask.id, {
+      status: 'failed',
+      details: {
+        error: errorMessage,
+      },
+      finishedAt: new Date(),
+    })
 
-		console.log(`Completed training with single PDF for task ${newTask.id}`, {
-			taskId: newTask.id,
-		});
-	} catch (error) {
-		const errorMessage = error instanceof Error ? error.message : String(error);
-		await taskRepo.update(newTask.id, {
-			status: "failed",
-			details: {
-				error: errorMessage,
-			},
-			finishedAt: new Date(),
-		});
+    console.error(`Failed to train with single PDF for task ${newTask.id}`, {
+      taskId: newTask.id,
+      error: errorMessage,
+    })
 
-		console.error(`Failed to train with single PDF for task ${newTask.id}`, {
-			taskId: newTask.id,
-			error: errorMessage,
-		});
-
-		throw error;
-	}
+    throw error
+  }
 }

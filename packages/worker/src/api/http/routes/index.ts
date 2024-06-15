@@ -10,6 +10,6 @@ export const defaultRoutes = [
   },
   {
     path: `${base_path}/ask`,
-    route: AskRoute
-  }
+    route: AskRoute,
+  },
 ]
