@@ -34,7 +34,7 @@ export async function ask(c: Context) {
 
 	const embeddings = new CloudflareWorkersAIEmbeddings({
 		binding: c.env.AI,
-		modelName: "@cf/baai/bge-small-en-v1.5",
+		modelName: "@cf/baai/bge-base-en-v1.5",
 	});
 
 	const aiKnowledgeVectorstore = new CloudflareVectorizeStore(embeddings, {
@@ -42,7 +42,7 @@ export async function ask(c: Context) {
 	});
 
 	const cloudflareModel = new ChatCloudflareWorkersAI({
-		model: "@hf/mistral/mistral-7b-instruct-v0.26",
+		model: "@hf/google/gemma-7b-it",
 		cloudflareAccountId: c.env.CLOUDFLARE_ACCOUNT_ID,
 		cloudflareApiToken: c.env.CLOUDFLARE_API_TOKEN,
 		verbose: true,
