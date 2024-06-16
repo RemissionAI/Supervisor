@@ -16,7 +16,7 @@ export async function load(c: Context) {
 export async function loadFile(c: Context) {
   const body = await c.req.parseBody()
 
-  await TrainService.trainWithSinglePdf(c.env, { source: body.file })
+  await TrainService.trainWithSinglePdf(c.env, { source: body.file, type: 'pdf'})
 
   return ResponseHandler.success(c, {
     message: 'Noice',
