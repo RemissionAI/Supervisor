@@ -4,3 +4,5 @@ export const ALLOWED_TRAINING_SOURCES = ['url', 'sitemap', 'pdf'] as const
 export const TASK_STATUS = Object.values(TaskStatus)
 
 export const EMBEDDINGS_MODEL = '@cf/baai/bge-small-en-v1.5'
+
+export const JINA_READER_PREFIX = "https://r.jina.ai/";

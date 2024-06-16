@@ -4,6 +4,7 @@ import { CheerioWebBaseLoader } from '@langchain/community/document_loaders/web/
 import { HtmlToTextTransformer } from '@langchain/community/document_transformers/html_to_text'
 import { WebPDFLoader } from '@langchain/community/document_loaders/web/pdf'
 import { SitemapLoader } from '@langchain/community/document_loaders/web/sitemap'
+import { JINA_READER_PREFIX } from '~/config/constants'
 
 export interface Loader {
   /**
@@ -24,8 +25,10 @@ export interface Loader {
  * Loads content from different sources (URL, PDF) to be used for embeddings.
  */
 class DataLoader implements Loader {
-  async url(url: string): Promise<Document[]> {
-    const loader = new CheerioWebBaseLoader(url)
+  async url(url: string, useJinaReader: boolean = true): Promise<Document[]> {
+    const prepareURL = useJinaReader ? `${JINA_READER_PREFIX}${url}` : url;
+
+    const loader = new CheerioWebBaseLoader(prepareURL)
     const rawDocs = await loader.load()
 
     const splitter = RecursiveCharacterTextSplitter.fromLanguage('html')

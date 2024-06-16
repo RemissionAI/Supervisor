@@ -211,7 +211,7 @@ async function loadDocuments(
 export async function trainWithSinglePdf(env: Bindings, body: unknown) {
   const data = PdfLoadSchema.parse(body)
 
-  const pdfFile = data.source
+  const pdfFile = data.source.source
 
   console.log(`Training with a single PDF file`, { fileName: pdfFile.name })
   const taskRepo = new TrainingTaskRepository(env)
