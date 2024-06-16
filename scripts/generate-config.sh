@@ -36,6 +36,7 @@ replace_placeholders() {
       -e "s/__CLOUDFLARE_ACCOUNT_ID__/${CLOUDFLARE_ACCOUNT_ID}/g" \
       -e "s/__CLOUDFLARE_API_TOKEN__/${CLOUDFLARE_API_TOKEN}/g" \
       -e "s/__JINA_TOKEN__/${JINA_TOKEN}/g"\
+      -e "s/__OPENAI_KEY__/${OPENAI_KEY}/g"\
       "$CONFIG_FILE" > "$OUTPUT_FILE"
 }
 

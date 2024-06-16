@@ -1,5 +1,6 @@
 import { AIMessage, HumanMessage } from '@langchain/core/messages'
 import { HttpResponseOutputParser } from 'langchain/output_parsers'
+import { ChatOpenAI } from "@langchain/openai";
 
 import {
   ChatCloudflareWorkersAI,
@@ -41,7 +42,8 @@ export async function ask(c: Context) {
 
   console.log(`Default llm: `, c.env.DEFAULT_LLM)
   console.log(`Account ID: `, c.env.CLOUDFLARE_ACCOUNT_ID);
-  console.log(`Account ID: `, c.env.CLOUDFLARE_API_TOKEN);
+  console.log(`CF Token: `, c.env.CLOUDFLARE_API_TOKEN);
+  console.log(`OpenAI: `, c.env.OPENAI_KEY);
 
   const cloudflareModel = new ChatCloudflareWorkersAI({
 		model: c.env.DEFAULT_LLM,
@@ -49,13 +51,18 @@ export async function ask(c: Context) {
 		cloudflareApiToken: c.env.CLOUDFLARE_API_TOKEN,
 		verbose: true,
 		baseUrl: `https://gateway.ai.cloudflare.com/v1/${c.env.CLOUDFLARE_ACCOUNT_ID}/remissionai/workers-ai/${c.env.DEFAULT_LLM}`,
-		onFailedAttempt: (error) => console.error(`f: ${error}`),
+	});
+
+  const openAImodel = new ChatOpenAI({
+    model: 'gpt-4o',
+		temperature: 0.9,
+		apiKey: c.env.OPENAI_KEY,
 	});
 
   const chain = createConversationalRetrievalChain({
-    model: cloudflareModel,
-    aiKnowledgeVectorstore,
-  })
+		model: openAImodel,
+		aiKnowledgeVectorstore,
+	});
 
   // let runIdResolver: (runId: string) => void
   // const runIdPromise = new Promise<string>((resolve) => {
