@@ -36,6 +36,7 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           JINA_TOKEN: ${{ secrets.JINA_TOKEN }}
+          OPENAI_KEY: ${{ secrets.OPENAI_KEY }}
 
       - name: Publish app
         uses: cloudflare/wrangler-action@v3.6.1
