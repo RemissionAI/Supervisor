@@ -11,6 +11,7 @@ export type Bindings = {
 	CLOUDFLARE_ACCOUNT_ID: string;
 	CLOUDFLARE_API_TOKEN: string;
 	DEFAULT_LLM: string;
+  JINA_TOKEN: string;
 };
 
 export type Environment = {

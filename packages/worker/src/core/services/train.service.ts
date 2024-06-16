@@ -76,7 +76,7 @@ async function handleKnowledge(
   const knowledgeRepo = new KnowledgeRepository(env)
   console.log(`Handling knowledge of type ${type}`, { taskId, type, source })
 
-  const documents = await fetchSourceDocuments(type, source, { taskId })
+  const documents = await fetchSourceDocuments(env, type, source, { taskId })
   await addDocumentsToStore(env, documents)
 
   await knowledgeRepo.insert({
@@ -161,6 +161,7 @@ export async function processTaskQueue(
 }
 
 async function fetchSourceDocuments(
+  env: Bindings,
   type: 'url' | 'pdf',
   source: string | File,
   customMetadata?: Record<string, any>,
@@ -168,7 +169,7 @@ async function fetchSourceDocuments(
   console.log(`Fetching source documents of type ${type}`, { type, source })
 
   try {
-    const documents = await loadDocuments(type, source)
+    const documents = await loadDocuments(env, type, source)
     return documents.map(doc => ({
       pageContent: doc.pageContent,
       metadata: {
@@ -191,6 +192,7 @@ async function fetchSourceDocuments(
 }
 
 async function loadDocuments(
+  env: Bindings,
   type: 'url' | 'pdf',
   source: string | File,
 ): Promise<Document[]> {
@@ -198,7 +200,7 @@ async function loadDocuments(
 
   switch (type) {
     case 'url':
-      return await DataLoader.url(source as string)
+      return await DataLoader.jinaUrlReader(source as string, { apiToken: env.JINA_TOKEN})
     case 'pdf':
       return await DataLoader.pdf(source as File)
     default:
@@ -229,7 +231,7 @@ export async function trainWithSinglePdf(env: Bindings, body: unknown) {
   })
 
   try {
-    const documents = await fetchSourceDocuments('pdf', pdfFile, {
+    const documents = await fetchSourceDocuments(env, 'pdf', pdfFile, {
       taskId: newTask.id,
     })
     await addDocumentsToStore(env, documents)
