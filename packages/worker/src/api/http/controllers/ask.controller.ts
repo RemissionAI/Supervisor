@@ -44,12 +44,13 @@ export async function ask(c: Context) {
   console.log(`Account ID: `, c.env.CLOUDFLARE_API_TOKEN);
 
   const cloudflareModel = new ChatCloudflareWorkersAI({
-    model: c.env.DEFAULT_LLM,
-    cloudflareAccountId: c.env.CLOUDFLARE_ACCOUNT_ID,
-    cloudflareApiToken: c.env.CLOUDFLARE_API_TOKEN,
-    verbose: true,
-    onFailedAttempt: (error => console.error(`f: ${error}`))
-  })
+		model: c.env.DEFAULT_LLM,
+		cloudflareAccountId: c.env.CLOUDFLARE_ACCOUNT_ID,
+		cloudflareApiToken: c.env.CLOUDFLARE_API_TOKEN,
+		verbose: true,
+		baseUrl: `https://gateway.ai.cloudflare.com/v1/${c.env.CLOUDFLARE_ACCOUNT_ID}/remissionai/workers-ai/${c.env.DEFAULT_LLM}`,
+		onFailedAttempt: (error) => console.error(`f: ${error}`),
+	});
 
   const chain = createConversationalRetrievalChain({
     model: cloudflareModel,
