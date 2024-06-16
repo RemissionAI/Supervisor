@@ -10,7 +10,9 @@ import type { Environment } from "~/common/interfaces/common.interface";
 
 const app = new Hono<Environment>();
 
-app.use("*", cors());
+app.use("*", cors({
+  origin: '*'
+}));
 
 app.options("*", (c) => {
 	return ResponseHandler.success(c, "ok");
