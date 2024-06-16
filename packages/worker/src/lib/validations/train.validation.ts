@@ -30,6 +30,4 @@ export const LoadKnowledgeSchema = z.object({
 	),
 });
 
-export const PdfLoadSchema = z.object({
-	source: PdfTypeSchema,
-});
+export const PdfLoadSchema = PdfTypeSchema
