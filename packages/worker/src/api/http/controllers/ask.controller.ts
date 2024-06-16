@@ -47,6 +47,8 @@ export async function ask(c: Context) {
     model: c.env.DEFAULT_LLM,
     cloudflareAccountId: c.env.CLOUDFLARE_ACCOUNT_ID,
     cloudflareApiToken: c.env.CLOUDFLARE_API_TOKEN,
+    verbose: true,
+    onFailedAttempt: (error => console.error(`f: ${error}`))
   })
 
   const chain = createConversationalRetrievalChain({
