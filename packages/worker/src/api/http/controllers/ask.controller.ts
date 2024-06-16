@@ -39,11 +39,14 @@ export async function ask(c: Context) {
     index: c.env.KNOWLEDGE_INDEX,
   })
 
+  console.log(`Default llm: `, c.env.DEFAULT_LLM)
+  console.log(`Account ID: `, c.env.CLOUDFLARE_ACCOUNT_ID);
+  console.log(`Account ID: `, c.env.CLOUDFLARE_API_TOKEN);
+
   const cloudflareModel = new ChatCloudflareWorkersAI({
     model: c.env.DEFAULT_LLM,
     cloudflareAccountId: c.env.CLOUDFLARE_ACCOUNT_ID,
     cloudflareApiToken: c.env.CLOUDFLARE_API_TOKEN,
-    verbose: true,
   })
 
   const chain = createConversationalRetrievalChain({
@@ -51,10 +54,10 @@ export async function ask(c: Context) {
     aiKnowledgeVectorstore,
   })
 
-  let runIdResolver: (runId: string) => void
-  const runIdPromise = new Promise<string>((resolve) => {
-    runIdResolver = resolve
-  })
+  // let runIdResolver: (runId: string) => void
+  // const runIdPromise = new Promise<string>((resolve) => {
+  //   runIdResolver = resolve
+  // })
 
   const answer = await chain.invoke({
     chat_history: formatChatHistory(history),
@@ -63,29 +66,29 @@ export async function ask(c: Context) {
 
   return ResponseHandler.success(c, answer)
 
-  const stream = await chain
-    .pipe(new HttpResponseOutputParser({ contentType: 'text/event-stream' }))
-    .stream(
-      {
-        chat_history: formatChatHistory(history),
-        question: currentMessage.content,
-      },
-      {
-        callbacks: [
-          {
-            handleChainStart(_llm, _prompts, runId) {
-              runIdResolver(runId)
-            },
-          },
-        ],
-      },
-    )
+  // const stream = await chain
+  //   .pipe(new HttpResponseOutputParser({ contentType: 'text/event-stream' }))
+  //   .stream(
+  //     {
+  //       chat_history: formatChatHistory(history),
+  //       question: currentMessage.content,
+  //     },
+  //     {
+  //       callbacks: [
+  //         {
+  //           handleChainStart(_llm, _prompts, runId) {
+  //             runIdResolver(runId)
+  //           },
+  //         },
+  //       ],
+  //     },
+  //   )
 
-  const runId = await runIdPromise
-  return new Response(stream, {
-    headers: {
-      'Content-Type': 'text/event-stream',
-      'X-Langsmith-Run-Id': runId,
-    },
-  })
+  // const runId = await runIdPromise
+  // return new Response(stream, {
+  //   headers: {
+  //     'Content-Type': 'text/event-stream',
+  //     'X-Langsmith-Run-Id': runId,
+  //   },
+  // })
 }
