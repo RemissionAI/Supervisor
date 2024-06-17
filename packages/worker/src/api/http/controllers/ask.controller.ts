@@ -52,11 +52,11 @@ export async function ask(c: Context) {
 		verbose: true,
 	});
 
-  const openAImodel = new ChatOpenAI({
-    model: 'gpt-4o',
-		temperature: 0.9,
-		apiKey: c.env.OPENAI_KEY,
-	});
+  // const openAImodel = new ChatOpenAI({
+  //   model: 'gpt-4o',
+	// 	temperature: 0.9,
+	// 	apiKey: c.env.OPENAI_KEY,
+	// });
 
   const chain = createConversationalRetrievalChain({
 		model: cloudflareModel,

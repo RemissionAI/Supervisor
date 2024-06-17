@@ -16,6 +16,8 @@ const askQuestion = async () => {
         if (res.errors![0])
             throw new Error(res.errors![0].message)
 
+        response.value = res.data?.answer!
+
     } catch (error) {
         response.value = error instanceof Error ? error.message : String(error)
     } finally {
