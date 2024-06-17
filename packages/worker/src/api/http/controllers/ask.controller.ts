@@ -27,9 +27,9 @@ function formatChatHistory(chatHistory: { type: 'ai' | 'human', content: string 
 export async function ask(c: Context) {
   const body = await c.req.json()
 
-  const { messages } = body
-  const history = messages.slice(0, -1)
-  const currentMessage = messages[messages.length - 1]
+  // const { messages } = body
+  // const history = messages.slice(0, -1)
+  // const currentMessage = messages[messages.length - 1]
 
   const embeddings = new CloudflareWorkersAIEmbeddings({
 		binding: c.env.AI,
@@ -69,8 +69,9 @@ export async function ask(c: Context) {
   // })
 
   const answer = await chain.invoke({
-    chat_history: formatChatHistory(history),
-    question: currentMessage.content,
+    chat_history: [],
+    question: body.question
+    // question: currentMessage.content,
   })
 
   return ResponseHandler.success(c, answer)
