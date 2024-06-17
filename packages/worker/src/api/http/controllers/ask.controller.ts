@@ -50,7 +50,6 @@ export async function ask(c: Context) {
 		cloudflareAccountId: c.env.CLOUDFLARE_ACCOUNT_ID,
 		cloudflareApiToken: c.env.CLOUDFLARE_API_TOKEN,
 		verbose: true,
-		baseUrl: `https://gateway.ai.cloudflare.com/v1/${c.env.CLOUDFLARE_ACCOUNT_ID}/remissionai/workers-ai/${c.env.DEFAULT_LLM}`,
 	});
 
   const openAImodel = new ChatOpenAI({
@@ -60,7 +59,7 @@ export async function ask(c: Context) {
 	});
 
   const chain = createConversationalRetrievalChain({
-		model: openAImodel,
+		model: cloudflareModel,
 		aiKnowledgeVectorstore,
 	});
 

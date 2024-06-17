@@ -25,7 +25,7 @@
     "drizzle-zod": "^0.5.1",
     "hono": "^4.3.11",
     "html-to-text": "^9.0.5",
-    "langchain": "^0.2.3",
+    "langchain": "^0.2.5",
     "pdfjs-dist": "^4.3.136",
     "zod": "^3.23.8"
   },
@@ -38,6 +38,6 @@
     "eslint": "^9.3.0",
     "typescript": "^5.4.5",
     "vitest": "^1.6.0",
-    "wrangler": "3.59.0"
+    "wrangler": "3.60.3"
   }
 }
