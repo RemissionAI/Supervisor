@@ -13,8 +13,8 @@ const askQuestion = async () => {
     try {
         const res = await askStore.question(query.value)
 
-        if (res.errors![0])
-            throw new Error(res.errors![0].message)
+        if (res.errors?.[0])
+            throw new Error(res.errors?.[0].message)
 
         response.value = res.data?.answer!
 
