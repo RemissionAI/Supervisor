@@ -1,6 +1,4 @@
 import { AIMessage, HumanMessage } from '@langchain/core/messages'
-import { HttpResponseOutputParser } from 'langchain/output_parsers'
-import { ChatOpenAI } from "@langchain/openai";
 
 import {
   ChatCloudflareWorkersAI,
@@ -32,36 +30,36 @@ export async function ask(c: Context) {
   // const currentMessage = messages[messages.length - 1]
 
   const embeddings = new CloudflareWorkersAIEmbeddings({
-		binding: c.env.AI,
-		modelName: "@cf/baai/bge-small-en-v1.5",
-	});
+    binding: c.env.AI,
+    modelName: '@cf/baai/bge-small-en-v1.5',
+  })
 
   const aiKnowledgeVectorstore = new CloudflareVectorizeStore(embeddings, {
     index: c.env.KNOWLEDGE_INDEX,
   })
 
   console.log(`Default llm: `, c.env.DEFAULT_LLM)
-  console.log(`Account ID: `, c.env.CLOUDFLARE_ACCOUNT_ID);
-  console.log(`CF Token: `, c.env.CLOUDFLARE_API_TOKEN);
-  console.log(`OpenAI: `, c.env.OPENAI_KEY);
+  console.log(`Account ID: `, c.env.CLOUDFLARE_ACCOUNT_ID)
+  console.log(`CF Token: `, c.env.CLOUDFLARE_API_TOKEN)
+  console.log(`OpenAI: `, c.env.OPENAI_KEY)
 
   const cloudflareModel = new ChatCloudflareWorkersAI({
-		model: c.env.DEFAULT_LLM,
-		cloudflareAccountId: c.env.CLOUDFLARE_ACCOUNT_ID,
-		cloudflareApiToken: c.env.CLOUDFLARE_API_TOKEN,
-		verbose: true,
-	});
+    model: c.env.DEFAULT_LLM,
+    cloudflareAccountId: c.env.CLOUDFLARE_ACCOUNT_ID,
+    cloudflareApiToken: c.env.CLOUDFLARE_API_TOKEN,
+    verbose: true,
+  })
 
   // const openAImodel = new ChatOpenAI({
   //   model: 'gpt-4o',
-	// 	temperature: 0.9,
-	// 	apiKey: c.env.OPENAI_KEY,
-	// });
+  // 	temperature: 0.9,
+  // 	apiKey: c.env.OPENAI_KEY,
+  // });
 
   const chain = createConversationalRetrievalChain({
-		model: cloudflareModel,
-		aiKnowledgeVectorstore,
-	});
+    model: cloudflareModel,
+    aiKnowledgeVectorstore,
+  })
 
   // let runIdResolver: (runId: string) => void
   // const runIdPromise = new Promise<string>((resolve) => {
@@ -70,7 +68,7 @@ export async function ask(c: Context) {
 
   const answer = await chain.invoke({
     chat_history: [],
-    question: body.question
+    question: body.question,
     // question: currentMessage.content,
   })
 
