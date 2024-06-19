@@ -3,6 +3,7 @@ import {
 } from '@langchain/cloudflare'
 import { HttpResponseOutputParser } from 'langchain/output_parsers'
 import type { Context } from 'hono'
+import { ChatOpenAI } from '@langchain/openai'
 import { askQuestionSchema } from '~/lib/validations/ask.validation'
 import { createConversationalRetrievalChain } from '~/lib/utils/conversation'
 import VectoreStore from '~/lib/utils/ai/store'
@@ -18,14 +19,21 @@ function createCloudflareModel(env: Bindings): ChatCloudflareWorkersAI {
   })
 }
 
+function createOpenAIModel(env: Bindings): ChatOpenAI {
+  return new ChatOpenAI({
+    model: 'gpt-4o',
+    openAIApiKey: env.OPENAI_KEY,
+  })
+}
+
 function createChain(
   env: Bindings,
 ): ReturnType<typeof createConversationalRetrievalChain> {
   const knowledgeStore = VectoreStore(env)
-  const cloudflareModel = createCloudflareModel(env)
+  const model = env.OPENAI_KEY ? createOpenAIModel(env) : createCloudflareModel(env)
 
   return createConversationalRetrievalChain({
-    model: cloudflareModel,
+    model,
     aiKnowledgeVectorstore: knowledgeStore,
   })
 }
