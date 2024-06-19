@@ -43,15 +43,12 @@ class DataLoader implements Loader {
       const response = await fetch(prepareURL, {
         method: 'GET',
         headers: {
-          Authorization:
-						`Bearer ${config.apiToken}`,
+          Authorization: `Bearer ${config.apiToken}`,
         },
       })
 
       if (!response.ok) {
-        throw new Error(
-					`Failed to fetch data from ${prepareURL}: ${response.statusText}`,
-        )
+        throw new Error(`Failed to fetch data from ${prepareURL}: ${response.statusText}`)
       }
 
       const contentType = response.headers.get('content-type')
@@ -83,9 +80,9 @@ class DataLoader implements Loader {
     const loader = new WebPDFLoader(file, {
       parsedItemSeparator: '',
       pdfjs: async () => {
-        // @ts-expect-error
+        // @ts-expect-error "idk"
         await import('pdfjs-dist/build/pdf.worker.min.mjs')
-        // @ts-expect-error
+        // @ts-expect-error "idk"
         return await import('pdfjs-dist/build/pdf.min.mjs')
       },
     })

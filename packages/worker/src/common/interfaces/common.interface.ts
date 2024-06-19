@@ -1,6 +1,6 @@
 import type { PushQueueTrainingTask } from './train.interface'
 
-export interface Bindings {
+export type Bindings = {
   ENVIRONMENT: 'dev' | 'staging' | 'production'
   SUPERVISOR_KV: KVNamespace
   SUPERVISOR_BUCKET: R2Bucket
@@ -15,7 +15,7 @@ export interface Bindings {
   OPENAI_KEY: string
 }
 
-export interface Environment {
+export type Environment = {
   Bindings: Bindings
 }
 
