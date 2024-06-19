@@ -200,7 +200,7 @@ async function loadDocuments(
 
   switch (type) {
     case 'url':
-      return await DataLoader.jinaUrlReader(source as string, { apiToken: env.JINA_TOKEN})
+      return await DataLoader.jinaUrlReader(source as string, { apiToken: env.JINA_TOKEN })
     case 'pdf':
       return await DataLoader.pdf(source as File)
     default:

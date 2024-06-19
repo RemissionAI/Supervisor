@@ -13,8 +13,8 @@ binding = "AI"
 
 [vars]
 ENVIRONMENT = "dev"
-DEFAULT_LLM = '@cf/meta/llama-2-7b-chat-fp16'
-CLOUDFLARE_ACCOUNT_ID = "__CLOUDFLARE_ACCOUNT_ID__" 
+DEFAULT_LLM = '@hf/mistral/mistral-7b-instruct-v0.2'
+CLOUDFLARE_ACCOUNT_ID = "__CLOUDFLARE_ACCOUNT_ID__"
 CLOUDFLARE_API_TOKEN = "__CLOUDFLARE_API_TOKEN__"
 JINA_TOKEN = "__JINA_TOKEN__"
 OPENAI_KEY = "__OPENAI_KEY__"
@@ -38,14 +38,14 @@ binding = "SUPERVISOR_DB"
 database_name = "__DEV_DATABASE_NAME__"
 database_id = "__DEV_DATABASE_ID__"
 
-[[queues.producers]]
-queue = "__DEV_TRAINING_QUEUE__"
-binding = "SUPERVISOR_TRAINING_QUEUE"
+# [[queues.producers]]
+# queue = "__DEV_TRAINING_QUEUE__"
+# binding = "SUPERVISOR_TRAINING_QUEUE"
 
-[[queues.consumers]]
-queue = "__DEV_TRAINING_QUEUE__"
-max_batch_size = 1
-max_retries = 2
+# [[queues.consumers]]
+# queue = "__DEV_TRAINING_QUEUE__"
+# max_batch_size = 1
+# max_retries = 2
 
 [dev]
 port = 4242
@@ -63,7 +63,7 @@ binding = "AI"
 [env.staging.vars]
 ENVIRONMENT = "staging"
 DEFAULT_LLM = '@cf/meta/llama-2-7b-chat-fp16'
-CLOUDFLARE_ACCOUNT_ID = "__CLOUDFLARE_ACCOUNT_ID__" 
+CLOUDFLARE_ACCOUNT_ID = "__CLOUDFLARE_ACCOUNT_ID__"
 CLOUDFLARE_API_TOKEN = "__CLOUDFLARE_API_TOKEN__"
 JINA_TOKEN = "__JINA_TOKEN__"
 OPENAI_KEY = "__OPENAI_KEY__"

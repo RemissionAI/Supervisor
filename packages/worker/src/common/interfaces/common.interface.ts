@@ -1,19 +1,19 @@
 import type { PushQueueTrainingTask } from './train.interface'
 
 export type Bindings = {
-	ENVIRONMENT: "dev" | "staging" | "production";
-	SUPERVISOR_KV: KVNamespace;
-	SUPERVISOR_BUCKET: R2Bucket;
-	KNOWLEDGE_INDEX: VectorizeIndex;
-	AI: Ai;
-	SUPERVISOR_DB: D1Database;
-	SUPERVISOR_TRAINING_QUEUE: Queue<PushQueueTrainingTask>;
-	CLOUDFLARE_ACCOUNT_ID: string;
-	CLOUDFLARE_API_TOKEN: string;
-	DEFAULT_LLM: string;
-  JINA_TOKEN: string;
-  OPENAI_KEY: string;
-};
+  ENVIRONMENT: 'dev' | 'staging' | 'production'
+  SUPERVISOR_KV: KVNamespace
+  SUPERVISOR_BUCKET: R2Bucket
+  KNOWLEDGE_INDEX: VectorizeIndex
+  AI: Ai
+  SUPERVISOR_DB: D1Database
+  SUPERVISOR_TRAINING_QUEUE: Queue<PushQueueTrainingTask>
+  CLOUDFLARE_ACCOUNT_ID: string
+  CLOUDFLARE_API_TOKEN: string
+  DEFAULT_LLM: string
+  JINA_TOKEN: string
+  OPENAI_KEY: string
+}
 
 export type Environment = {
   Bindings: Bindings
