@@ -1,46 +1,57 @@
-import {
-  ChatCloudflareWorkersAI,
-} from '@langchain/cloudflare'
+import { ChatCloudflareWorkersAI } from '@langchain/cloudflare'
 import { HttpResponseOutputParser } from 'langchain/output_parsers'
 import type { Context } from 'hono'
 import { ChatOpenAI } from '@langchain/openai'
 import { askQuestionSchema } from '~/lib/validations/ask.validation'
 import { createConversationalRetrievalChain } from '~/lib/utils/conversation'
 import VectoreStore from '~/lib/utils/ai/store'
+import { KvCache } from '~/lib/utils/kv-cache'
+import { KV_SETTINGS_KEY } from '~/config/constants'
 import type { Bindings } from '~/common/interfaces/common.interface'
+import type { ModelSettings } from '~/common/interfaces/internal.interface'
 
-function createCloudflareModel(env: Bindings): ChatCloudflareWorkersAI {
-  return new ChatCloudflareWorkersAI({
-    model: env.DEFAULT_LLM,
-    cloudflareAccountId: env.CLOUDFLARE_ACCOUNT_ID,
-    cloudflareApiToken: env.CLOUDFLARE_API_TOKEN,
-    verbose: true,
-    // baseUrl: `https://gateway.ai.cloudflare.com/v1/${env.CLOUDFLARE_ACCOUNT_ID}/${env.GATEWAY_NAME}/workers-ai/`,
-  })
+async function getModelSettings(cache: KvCache): Promise<ModelSettings | null> {
+  return await cache.read<ModelSettings>(KV_SETTINGS_KEY, 'json')
 }
 
-function createOpenAIModel(env: Bindings): ChatOpenAI {
-  return new ChatOpenAI({
-    model: 'gpt-4o',
-    openAIApiKey: env.OPENAI_KEY,
-  })
-}
-
-function createChain(
+function initializeModel(
   env: Bindings,
-): ReturnType<typeof createConversationalRetrievalChain> {
+  modelSettings: ModelSettings | null,
+): ChatCloudflareWorkersAI | ChatOpenAI {
+  if (modelSettings?.model?.provider === 'openai' && modelSettings.openaiKey) {
+    return new ChatOpenAI({
+      model: modelSettings.model.id,
+      openAIApiKey: modelSettings.openaiKey,
+    })
+  }
+  else {
+    return new ChatCloudflareWorkersAI({
+      model: modelSettings?.model?.provider === 'workers-ai' && modelSettings.model.id ? modelSettings.model.id : env.DEFAULT_LLM,
+      cloudflareAccountId: env.CLOUDFLARE_ACCOUNT_ID,
+      cloudflareApiToken: env.CLOUDFLARE_API_TOKEN,
+      verbose: true,
+    })
+  }
+}
+
+async function createChain(
+  env: Bindings,
+): Promise<ReturnType<typeof createConversationalRetrievalChain>> {
   const knowledgeStore = VectoreStore(env)
-  const model = env.OPENAI_KEY ? createOpenAIModel(env) : createCloudflareModel(env)
+  const cache = new KvCache(env.SUPERVISOR_KV)
+  const modelSettings = await getModelSettings(cache)
+  const model = initializeModel(env, modelSettings)
 
   return createConversationalRetrievalChain({
     model,
     aiKnowledgeVectorstore: knowledgeStore,
+    systemPrompt: modelSettings?.systemPrompt,
   })
 }
 
 export async function ask(c: Context, body: unknown) {
   const data = askQuestionSchema.parse(body)
-  const chain = createChain(c.env)
+  const chain = await createChain(c.env)
 
   const answer = await chain.invoke({
     chat_history: [],
@@ -52,16 +63,14 @@ export async function ask(c: Context, body: unknown) {
 
 export async function askSSE(c: Context, body: unknown) {
   const data = askQuestionSchema.parse(body)
-  const chain = createChain(c.env)
+  const chain = await createChain(c.env)
 
   const stream = await chain
     .pipe(new HttpResponseOutputParser({ contentType: 'text/event-stream' }))
-    .stream(
-      {
-        chat_history: [],
-        question: data.question,
-      },
-    )
+    .stream({
+      chat_history: [],
+      question: data.question,
+    })
 
   return new Response(stream, {
     headers: {

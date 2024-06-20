@@ -47,7 +47,7 @@ async function onSubmit(event: FormSubmitEvent<Settings>) {
 <template>
     <UContainer>
         <h1 class="font-bold text-xl my-10">Settings</h1>
-        <UForm :schema="settingsSchema" :state="state" class="space-y-4" @submit.prevent="onSubmit">
+        <UForm :schema="settingsSchema" :state="state" class="space-y-4" @submit="onSubmit">
             <UFormGroup label="Model" name="model">
                 <UInputMenu v-model="state.model" :options="textGenerationModels" :selected="selectedModel" />
             </UFormGroup>

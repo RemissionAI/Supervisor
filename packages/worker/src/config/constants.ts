@@ -7,6 +7,8 @@ export const EMBEDDINGS_MODEL = '@cf/baai/bge-small-en-v1.5'
 
 export const JINA_READER_PREFIX = 'https://r.jina.ai/'
 
+export const KV_SETTINGS_KEY = 'internal:model-settings'
+
 export const SUPPORTED_TEXT_GENERATION_MODELS = [
   {
     provider: 'workers-ai',
