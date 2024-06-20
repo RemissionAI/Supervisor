@@ -60,10 +60,11 @@ async function handleTaskByType(
     case 'sitemap':
       await handleSitemap(env, taskId, metadata.source)
       break
-    default:
+    default:{
       const errorMsg = `Unsupported data type`
       console.error(errorMsg, { taskId })
       throw new Error(errorMsg)
+    }
   }
 }
 
@@ -186,7 +187,7 @@ async function fetchSourceDocuments(
       error: errorMessage,
     })
     throw new Error(
-			`Failed to load documents of type ${type}: ${errorMessage}`,
+      `Failed to load documents of type ${type}: ${errorMessage}`,
     )
   }
 }
@@ -203,17 +204,18 @@ async function loadDocuments(
       return await DataLoader.jinaUrlReader(source as string, { apiToken: env.JINA_TOKEN })
     case 'pdf':
       return await DataLoader.pdf(source as File)
-    default:
+    default:{
       const errorMsg = `Unsupported document type: ${type}`
       console.error(errorMsg, { type, source })
       throw new Error(errorMsg)
+    }
   }
 }
 
 export async function trainWithSinglePdf(env: Bindings, body: unknown) {
   const data = PdfLoadSchema.parse(body)
 
-  const pdfFile = data.source.source
+  const pdfFile = data.source
 
   console.log(`Training with a single PDF file`, { fileName: pdfFile.name })
   const taskRepo = new TrainingTaskRepository(env)
