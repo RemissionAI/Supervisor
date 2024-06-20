@@ -16,10 +16,12 @@ const condenseQuestionPrompt = ChatPromptTemplate.fromMessages([
   ['human', CONDENSE_QUESTION_HUMAN_TEMPLATE],
 ])
 
-const answerPrompt = ChatPromptTemplate.fromMessages([
-  ['system', ANSWER_SYSTEM_TEMPLATE],
-  ['human', ANSWER_HUMAN_TEMPLATE],
-])
+function answerPrompt(answerSystemPrompt?: string) {
+  return ChatPromptTemplate.fromMessages([
+    ['system', answerSystemPrompt || ANSWER_SYSTEM_TEMPLATE],
+    ['human', ANSWER_HUMAN_TEMPLATE],
+  ])
+}
 
 function formatDocuments(docs: Document[]): string {
   return docs.map(doc => `<doc>\n${doc.pageContent}\n</doc>`).join('\n')
@@ -49,14 +51,14 @@ function createRetrievalChain(aiKnowledgeRetriever: any) {
   ]).withConfig({ runName: 'RetrievalChain' })
 }
 
-function createAnswerChain(model: BaseLanguageModel, retrievalChain: any) {
+function createAnswerChain(model: BaseLanguageModel, retrievalChain: any, systemPrompt?: string) {
   return RunnableSequence.from([
     {
       standalone_question: (input: any) => input.standalone_question,
       chat_history: (input: any) => input.chat_history,
       context: retrievalChain,
     },
-    answerPrompt,
+    answerPrompt(systemPrompt),
     model,
   ]).withConfig({ runName: 'AnswerGenerationChain' })
 }
@@ -64,16 +66,18 @@ function createAnswerChain(model: BaseLanguageModel, retrievalChain: any) {
 export function createConversationalRetrievalChain({
   model,
   aiKnowledgeVectorstore,
+  systemPrompt,
 }: {
   model: BaseLanguageModel
   aiKnowledgeVectorstore: VectorStore
+  systemPrompt?: string
 }) {
   const aiKnowledgeRetriever = createAIKnowledgeRetriever(
     aiKnowledgeVectorstore,
   )
   const retrievalChain = createRetrievalChain(aiKnowledgeRetriever)
   const standaloneQuestionChain = createStandaloneQuestionChain(model)
-  const answerChain = createAnswerChain(model, retrievalChain)
+  const answerChain = createAnswerChain(model, retrievalChain, systemPrompt)
 
   return RunnableSequence.from([
     {
