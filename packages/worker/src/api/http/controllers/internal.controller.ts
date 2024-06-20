@@ -8,6 +8,10 @@ export async function getSettings(c: Context) {
   return ResponseHandler.success(c, settings)
 }
 
+export async function getModels(c: Context) {
+  return ResponseHandler.success(c, InternalService.getSupportedTextGenerationModels())
+}
+
 export async function updateSettings(c: Context) {
   const body = await c.req.json()
 

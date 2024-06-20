@@ -2,6 +2,7 @@ import type { Bindings } from '~/common/interfaces/common.interface'
 import { updateModelSettingsSchema } from '~/lib/validations/internal.validation'
 import { KvCache } from '~/lib/utils/kv-cache'
 import type { ModelSettings } from '~/common/interfaces/internal.interface'
+import { SUPPORTED_TEXT_GENERATION_MODELS } from '~/config/constants'
 
 const SETTINGS_KEY = 'internal:model-settings'
 
@@ -12,6 +13,10 @@ export async function getSettings(
   const settings = await cache.read<ModelSettings>(SETTINGS_KEY, 'json')
 
   return settings || null
+}
+
+export function getSupportedTextGenerationModels() {
+  return SUPPORTED_TEXT_GENERATION_MODELS
 }
 
 export async function updateSettings(env: Bindings, body: unknown) {
