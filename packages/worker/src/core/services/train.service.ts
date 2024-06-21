@@ -32,7 +32,7 @@ async function handleKnowledge(
 
 export async function getSitemapBatches(
   sitemaps: SitemapType[],
-  batchSize: number = 100,
+  batchSize: number = 16,
 ) {
   const batches: string[][] = []
 

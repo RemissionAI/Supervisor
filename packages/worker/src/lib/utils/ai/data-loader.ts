@@ -43,7 +43,7 @@ class DataLoader implements Loader {
       const response = await fetch(prepareURL, {
         method: 'GET',
         headers: {
-          Authorization: `Bearer ${config.apiToken}`,
+          // Authorization: `Bearer ${config.apiToken}`,
         },
       })
 
