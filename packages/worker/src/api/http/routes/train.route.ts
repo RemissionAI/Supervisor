@@ -6,4 +6,5 @@ export const route = new Hono<Environment>()
 
 route.post('/load', TrainController.load)
 route.post('/load-file', TrainController.loadFile)
+route.get('/sitemap', TrainController.loadSitemap)
 route.get('/list', TrainController.list)

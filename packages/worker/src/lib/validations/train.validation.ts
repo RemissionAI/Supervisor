@@ -11,9 +11,17 @@ const PdfTypeSchema = z.object({
   source: validPDF,
 })
 
+const SitemapFiltersSchema = z.object({
+  start: z.number().min(0),
+  maxUrls: z.number().max(999),
+})
+
+export type SitemapFilters = z.infer<typeof SitemapFiltersSchema>
+
 const SitemapTypeSchema = z.object({
   type: z.literal('sitemap'),
   source: z.string().url(),
+  filters: SitemapFiltersSchema.optional(),
 })
 
 export const KnowledgeTypeSchema = z.discriminatedUnion('type', [

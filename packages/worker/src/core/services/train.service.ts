@@ -1,6 +1,6 @@
 import type { Document } from 'langchain/document'
 import { KnowledgeRepository } from '../repositories/knowledge.repository'
-import type { KnowledgeMeta } from '~/lib/validations/train.validation'
+import type { KnowledgeMeta, SitemapFilters } from '~/lib/validations/train.validation'
 import { LoadKnowledgeSchema, PdfLoadSchema } from '~/lib/validations/train.validation'
 import type { Bindings } from '~/common/interfaces/common.interface'
 import { addDocumentsToStore } from '~/lib/utils/ai/embeddings'
@@ -98,11 +98,11 @@ async function handleSitemap(
   env: Bindings,
   taskId: number,
   sitemapUrl: string,
+  filters: SitemapFilters,
 ) {
   const taskRepo = new TrainingTaskRepository(env)
-  console.log(`Handling sitemap ${sitemapUrl}`, { taskId, sitemapUrl })
 
-  const links = await DataLoader.sitemap(sitemapUrl)
+  const links = await DataLoader.sitemap(sitemapUrl, filters.start, filters.maxUrls)
   const results = await Promise.allSettled(
     links.map(link =>
       handleKnowledge(env, taskId, 'url', link.loc).catch((error) => {
