@@ -92,7 +92,8 @@ binding = "SUPERVISOR_TRAINING_QUEUE"
 [[env.staging.queues.consumers]]
 queue = "__STAGING_TRAINING_QUEUE__"
 max_batch_size = 1
-max_retries = 2
+max_concurrency = 1
+max_retries = 1
 
 # ########################
 #     Production Env     #
