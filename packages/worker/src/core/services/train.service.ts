@@ -73,14 +73,20 @@ export async function process(env: Bindings, inputData: unknown) {
   )
   const batches = await getSitemapBatches(sitemapArr)
 
-  for (const batch of batches) {
-    await env.SUPERVISOR_TRAINING_QUEUE.send({
-      taskId: newTask.id,
-      links: batch,
-      batchIndex: generateRandomString(4),
-    }, {
-      delaySeconds: 70,
-    })
+  for (let i = 0; i < batches.length; i++) {
+    const delaySeconds = (i + 1) * 60 + 5
+    const batch = batches[i]
+
+    await env.SUPERVISOR_TRAINING_QUEUE.send(
+      {
+        taskId: newTask.id,
+        links: batch,
+        batchIndex: generateRandomString(4),
+      },
+      {
+        delaySeconds,
+      },
+    )
   }
 }
 
