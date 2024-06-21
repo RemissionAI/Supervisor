@@ -58,7 +58,7 @@ async function handleTaskByType(
       await handleKnowledge(env, taskId, metadata.type, metadata.source)
       break
     case 'sitemap':
-      await handleSitemap(env, taskId, metadata.source)
+      await handleSitemap(env, taskId, metadata.source, metadata.filters)
       break
     default:{
       const errorMsg = `Unsupported data type`
@@ -98,11 +98,11 @@ async function handleSitemap(
   env: Bindings,
   taskId: number,
   sitemapUrl: string,
-  filters: SitemapFilters,
+  filters?: SitemapFilters,
 ) {
   const taskRepo = new TrainingTaskRepository(env)
 
-  const links = await DataLoader.sitemap(sitemapUrl, filters.start, filters.maxUrls)
+  const links = await DataLoader.sitemap(sitemapUrl, filters?.start, filters?.maxUrls)
   const results = await Promise.allSettled(
     links.map(link =>
       handleKnowledge(env, taskId, 'url', link.loc).catch((error) => {
