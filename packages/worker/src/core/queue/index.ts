@@ -1,4 +1,4 @@
-import { processTaskQueue } from '../services/train.service'
+import { processQueueTask } from '../services/train.service'
 import type { Bindings } from '~/common/interfaces/common.interface'
 import type { PushQueueTrainingTask } from '~/common/interfaces/train.interface'
 
@@ -10,10 +10,8 @@ export default async function queue(
     const body = message.body
 
     try {
-      console.log(`processing queue ${JSON.stringify(body)}`)
-      await processTaskQueue(env, body.taskId, body.data)
+      await processQueueTask(env, body.taskId, body.links, body.batchIndex)
 
-      console.log(`finished processing`)
       message.ack()
     }
     catch (err) {

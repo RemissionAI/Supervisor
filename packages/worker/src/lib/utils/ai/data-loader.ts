@@ -96,11 +96,10 @@ class DataLoader implements Loader {
     return await splitter.splitDocuments(rawDocs)
   }
 
-  async sitemap(url: string, start: number = 0, maxUrls: number = 500) {
+  async sitemap(url: string) {
     const loader = new SitemapLoader(url)
-    const urls = await loader.parseSitemap()
 
-    return urls.slice(start, start + maxUrls)
+    return await loader.parseSitemap()
   }
 }
 

@@ -37,15 +37,32 @@ export class TrainingTaskRepository extends BaseRepository {
   }
 
   /**
+   * get a training task by id
+   * @param taskId - The training task id
+   * @returns The training task.
+   */
+  async get(taskId: number): Promise<TrainingTaskModel | null> {
+    try {
+      const result = await this.db
+        .select()
+        .from(this.trainingTaskTable)
+        .where(eq(trainingTasks.id, taskId))
+        .get()
+
+      return result ? new TrainingTaskModel(result) : null
+    }
+    catch (err) {
+      throw new Error(`Error fetching training task: ${err}`)
+    }
+  }
+
+  /**
    * Lists training tasks with pagination.
    * @param page - The page number to retrieve.
    * @param pageSize - The number of tasks per page.
    * @returns A list of training tasks for the specified page.
    */
-  async list(
-    page: number,
-    pageSize: number,
-  ): Promise<TrainingTaskModel[]> {
+  async list(page: number, pageSize: number): Promise<TrainingTaskModel[]> {
     try {
       const query = this.db.select().from(this.trainingTaskTable)
 

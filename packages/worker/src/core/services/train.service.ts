@@ -1,72 +1,15 @@
 import type { Document } from 'langchain/document'
 import { KnowledgeRepository } from '../repositories/knowledge.repository'
-import type { KnowledgeMeta, SitemapFilters } from '~/lib/validations/train.validation'
-import { LoadKnowledgeSchema, PdfLoadSchema } from '~/lib/validations/train.validation'
+import type { SitemapType } from '~/lib/validations/train.validation'
+import {
+  LoadKnowledgeSchema,
+  PdfLoadSchema,
+} from '~/lib/validations/train.validation'
 import type { Bindings } from '~/common/interfaces/common.interface'
 import { addDocumentsToStore } from '~/lib/utils/ai/embeddings'
 import DataLoader from '~/lib/utils/ai/data-loader'
 import { TrainingTaskRepository } from '~/core/repositories/train.repository'
-
-export async function processTask(
-  env: Bindings,
-  taskId: number,
-  metadata: KnowledgeMeta,
-) {
-  const taskRepo = new TrainingTaskRepository(env)
-
-  console.log(`Starting processing task ${taskId}`, { taskId, metadata })
-
-  await taskRepo.update(taskId, { status: 'processing' })
-
-  try {
-    await handleTaskByType(env, taskId, metadata)
-    await taskRepo.update(taskId, {
-      status: 'completed',
-      finishedAt: new Date(),
-    })
-    console.log(`Completed processing task ${taskId}`, { taskId })
-  }
-  catch (error) {
-    const errorMessage = error instanceof Error ? error.message : String(error)
-    await taskRepo.update(taskId, {
-      status: 'failed',
-      details: {
-        error: errorMessage,
-      },
-      finishedAt: new Date(),
-    })
-    console.error(`Failed to process task ${taskId}`, {
-      taskId,
-      error: errorMessage,
-    })
-  }
-}
-
-async function handleTaskByType(
-  env: Bindings,
-  taskId: number,
-  metadata: KnowledgeMeta,
-) {
-  console.log(`Handling task by type ${metadata.type}`, {
-    taskId,
-    type: metadata.type,
-  })
-
-  switch (metadata.type) {
-    case 'url':
-    case 'pdf':
-      await handleKnowledge(env, taskId, metadata.type, metadata.source)
-      break
-    case 'sitemap':
-      await handleSitemap(env, taskId, metadata.source, metadata.filters)
-      break
-    default:{
-      const errorMsg = `Unsupported data type`
-      console.error(errorMsg, { taskId })
-      throw new Error(errorMsg)
-    }
-  }
-}
+import { generateRandomString } from '~/lib/utils/str'
 
 async function handleKnowledge(
   env: Bindings,
@@ -75,67 +18,39 @@ async function handleKnowledge(
   source: string | File,
 ) {
   const knowledgeRepo = new KnowledgeRepository(env)
-  console.log(`Handling knowledge of type ${type}`, { taskId, type, source })
-
   const documents = await fetchSourceDocuments(env, type, source, { taskId })
   await addDocumentsToStore(env, documents)
 
   await knowledgeRepo.insert({
     type,
     taskId,
-    content: documents.map(content => content.pageContent).join('\n---\n'),
+    content: documents.map(content => content.pageContent).join('\n--\n'),
     source: typeof source === 'string' ? source : source.name,
     createdAt: new Date(),
   })
-
-  console.log(`Inserted documents into repository for task ${taskId}`, {
-    taskId,
-    documentCount: documents.length,
-  })
 }
 
-async function handleSitemap(
-  env: Bindings,
-  taskId: number,
-  sitemapUrl: string,
-  filters?: SitemapFilters,
+export async function getSitemapBatches(
+  sitemaps: SitemapType[],
+  batchSize: number = 100,
 ) {
-  const taskRepo = new TrainingTaskRepository(env)
+  const batches: string[][] = []
 
-  const links = await DataLoader.sitemap(sitemapUrl, filters?.start, filters?.maxUrls)
-  const results = await Promise.allSettled(
-    links.map(link =>
-      handleKnowledge(env, taskId, 'url', link.loc).catch((error) => {
-        return { link: link.loc, reason: error.message || String(error) }
-      }),
-    ),
-  )
+  for (const sitemap of sitemaps) {
+    const elements = await DataLoader.sitemap(sitemap.source)
+    const links = elements.map(element => element.loc)
 
-  const failedLinks = results
-    .filter(result => result.status === 'rejected')
-    .map((result, index) => ({
-      url: links[index].loc,
-      reason: (result as PromiseRejectedResult).reason,
-    }))
-
-  if (failedLinks.length > 0) {
-    console.error(`Failed to process some links in sitemap`, {
-      taskId,
-      failedLinks,
-    })
-    await taskRepo.update(taskId, {
-      details: {
-        failedLinks,
-      },
-    })
+    for (let i = 0; i < links.length; i += batchSize) {
+      batches.push(links.slice(i, i + batchSize))
+    }
   }
+
+  return batches
 }
 
-export async function queueTask(env: Bindings, inputData: unknown) {
+export async function process(env: Bindings, inputData: unknown) {
   const validatedData = LoadKnowledgeSchema.parse(inputData)
   const taskRepo = new TrainingTaskRepository(env)
-
-  console.log(`Queueing new task`, { validatedData })
 
   const newTask = await taskRepo.insert({
     data: validatedData.data,
@@ -143,22 +58,80 @@ export async function queueTask(env: Bindings, inputData: unknown) {
     startedAt: new Date(),
   })
 
+  const linksArr = validatedData.data
+    .filter(data => data.type === 'url')
+    .map(link => link.source)
+
   await env.SUPERVISOR_TRAINING_QUEUE.send({
     taskId: newTask.id,
-    data: validatedData.data,
+    links: linksArr,
+    batchIndex: generateRandomString(4),
   })
 
-  console.log(`Queued task ${newTask.id}`, { taskId: newTask.id })
+  const sitemapArr = validatedData.data.filter(
+    data => data.type === 'sitemap',
+  )
+  const batches = await getSitemapBatches(sitemapArr)
+
+  for (const batch of batches) {
+    await env.SUPERVISOR_TRAINING_QUEUE.send({
+      taskId: newTask.id,
+      links: batch,
+      batchIndex: generateRandomString(4),
+    })
+  }
 }
 
-export async function processTaskQueue(
+export async function processQueueTask(
   env: Bindings,
   taskId: number,
-  data: KnowledgeMeta[],
+  links: string[],
+  batchIndex: string,
 ) {
-  console.log(`Processing task queue`, { taskId, dataLength: data.length })
+  const taskRepo = new TrainingTaskRepository(env)
 
-  await Promise.all(data.map(data => processTask(env, taskId, data)))
+  const results = await Promise.allSettled(
+    links.map(link =>
+      handleKnowledge(env, taskId, 'url', link).catch(error => ({
+        link,
+        reason: error.message || String(error),
+      })),
+    ),
+  )
+
+  const failedLinks = results
+    .filter(result => result.status === 'rejected')
+    .map((result, index) => ({
+      url: links[index],
+      reason: (result as PromiseRejectedResult).reason,
+    }))
+
+  const existingTask = await taskRepo.get(taskId)
+
+  if (!existingTask)
+    throw new Error('task not found')
+
+  const updatedDetails = {
+    ...existingTask.details,
+    batchesCompleted: [
+      ...(existingTask.details?.batchesCompleted || []),
+      batchIndex,
+    ],
+    failedLinks: [...(existingTask.details?.failedLinks || []), ...failedLinks],
+  }
+
+  if (failedLinks.length > 0) {
+    console.error(`Failed to process some links in sitemap`, {
+      taskId,
+      failedLinks,
+    })
+  }
+
+  await taskRepo.update(taskId, {
+    details: updatedDetails,
+    status: updatedDetails.batchesCompleted.length === existingTask.details?.totalBatches ? 'completed' : existingTask.status,
+    finishedAt: updatedDetails.batchesCompleted.length === existingTask.details?.totalBatches ? new Date() : null,
+  })
 }
 
 async function fetchSourceDocuments(
@@ -167,8 +140,6 @@ async function fetchSourceDocuments(
   source: string | File,
   customMetadata?: Record<string, any>,
 ): Promise<Document[]> {
-  console.log(`Fetching source documents of type ${type}`, { type, source })
-
   try {
     const documents = await loadDocuments(env, type, source)
     return documents.map(doc => ({
@@ -186,9 +157,7 @@ async function fetchSourceDocuments(
       source,
       error: errorMessage,
     })
-    throw new Error(
-      `Failed to load documents of type ${type}: ${errorMessage}`,
-    )
+    throw new Error(`Failed to load documents of type ${type}: ${errorMessage}`)
   }
 }
 
@@ -197,14 +166,14 @@ async function loadDocuments(
   type: 'url' | 'pdf',
   source: string | File,
 ): Promise<Document[]> {
-  console.log(`Loading documents of type ${type}`, { type, source })
-
   switch (type) {
     case 'url':
-      return await DataLoader.jinaUrlReader(source as string, { apiToken: env.JINA_TOKEN })
+      return await DataLoader.jinaUrlReader(source as string, {
+        apiToken: env.JINA_TOKEN,
+      })
     case 'pdf':
       return await DataLoader.pdf(source as File)
-    default:{
+    default: {
       const errorMsg = `Unsupported document type: ${type}`
       console.error(errorMsg, { type, source })
       throw new Error(errorMsg)
@@ -214,10 +183,8 @@ async function loadDocuments(
 
 export async function trainWithSinglePdf(env: Bindings, body: unknown) {
   const data = PdfLoadSchema.parse(body)
-
   const pdfFile = data.source
 
-  console.log(`Training with a single PDF file`, { fileName: pdfFile.name })
   const taskRepo = new TrainingTaskRepository(env)
   const knowledgeRepo = new KnowledgeRepository(env)
 
@@ -250,16 +217,14 @@ export async function trainWithSinglePdf(env: Bindings, body: unknown) {
       status: 'completed',
       finishedAt: new Date(),
     })
-
-    console.log(`Completed training with single PDF for task ${newTask.id}`, {
-      taskId: newTask.id,
-    })
   }
   catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error)
+    const existingTask = await taskRepo.get(newTask.id)
     await taskRepo.update(newTask.id, {
       status: 'failed',
       details: {
+        ...existingTask?.details,
         error: errorMessage,
       },
       finishedAt: new Date(),
