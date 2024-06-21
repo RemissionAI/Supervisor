@@ -5,7 +5,7 @@ import type { TrainingTask, TrainingTaskDetails } from '~/common/interfaces/trai
 export class TrainingTaskModel extends BaseModel {
   id: number
   data: KnowledgeMeta[]
-  status: string
+  status: 'queued' | 'processing' | 'completed' | 'failed'
   details: TrainingTaskDetails | null
   startedAt: Date
   finishedAt: Date | null
