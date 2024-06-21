@@ -5,3 +5,4 @@ import * as AskController from '~/api/http/controllers/ask.controller'
 export const route = new Hono<Environment>()
 
 route.post('/', AskController.ask)
+route.post('/stream', AskController.askSSE)

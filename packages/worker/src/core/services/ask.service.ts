@@ -2,7 +2,7 @@ import { ChatCloudflareWorkersAI } from '@langchain/cloudflare'
 import { HttpResponseOutputParser } from 'langchain/output_parsers'
 import type { Context } from 'hono'
 import { ChatOpenAI } from '@langchain/openai'
-import { askQuestionSchema } from '~/lib/validations/ask.validation'
+import { askQuestionSchema, chatQuestionSchema } from '~/lib/validations/ask.validation'
 import { createConversationalRetrievalChain } from '~/lib/utils/conversation'
 import VectoreStore from '~/lib/utils/ai/store'
 import { KvCache } from '~/lib/utils/kv-cache'
@@ -62,14 +62,14 @@ export async function ask(c: Context, body: unknown) {
 }
 
 export async function askSSE(c: Context, body: unknown) {
-  const data = askQuestionSchema.parse(body)
+  const data = chatQuestionSchema.parse(body)
   const chain = await createChain(c.env)
 
   const stream = await chain
     .pipe(new HttpResponseOutputParser({ contentType: 'text/event-stream' }))
     .stream({
       chat_history: [],
-      question: data.question,
+      question: data.prompt,
     })
 
   return new Response(stream, {
