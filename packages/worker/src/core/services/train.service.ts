@@ -32,7 +32,7 @@ async function handleKnowledge(
 
 export async function getSitemapBatches(
   sitemaps: SitemapType[],
-  batchSize: number = 16,
+  batchSize: number = 20,
 ) {
   const batches: string[][] = []
 
@@ -78,6 +78,8 @@ export async function process(env: Bindings, inputData: unknown) {
       taskId: newTask.id,
       links: batch,
       batchIndex: generateRandomString(4),
+    }, {
+      delaySeconds: 70,
     })
   }
 }
