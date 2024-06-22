@@ -20,7 +20,6 @@ const { errors, data } = await trainStore.list(1, 10)
 if (!errors)
     result.value = data!
 
-// Columns
 const columns = [{
     key: 'id',
     label: '#',
@@ -47,7 +46,6 @@ const columns = [{
     sortable: false
 }]
 
-// Pagination
 const sort = ref({ column: 'status', direction: 'asc' as const })
 const page = ref(1)
 const pageCount = ref(10)
@@ -58,8 +56,8 @@ const pageTo = computed(() => Math.min(page.value * pageCount.value, pageTotal.v
 </script>
 
 <template>
-    <h2 class="font-semibold text-xl text-gray-900 dark:text-white leading-tight">
-        Training tasks
+    <h2 class="font-semibold text-xl text-gray-900 dark:text-white leading-tight mb-5">
+        Knowledge
     </h2>
     <UTable v-model:sort="sort" :columns="columns" :rows="result" :ui="config" sort-asc-icon="i-heroicons-arrow-up"
         sort-desc-icon="i-heroicons-arrow-down" sort-mode="manual">
