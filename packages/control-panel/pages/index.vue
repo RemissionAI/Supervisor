@@ -48,7 +48,7 @@ const columns = [{
 }]
 
 // Pagination
-const sort = ref({ column: 'id', direction: 'asc' as const })
+const sort = ref({ column: 'status', direction: 'asc' as const })
 const page = ref(1)
 const pageCount = ref(10)
 const pageTotal = ref(200)

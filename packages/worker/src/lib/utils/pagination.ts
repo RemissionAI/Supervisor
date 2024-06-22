@@ -11,26 +11,31 @@ export const paginationSchema = object({
   limit: number().positive(),
 })
 
-export function paginated(c: Context, defaultLimit: number = 10): Pagination {
+export function getPagination(
+  c: Context,
+  defaultLimit: number = 10,
+): Pagination {
   const rawPage = c.req.query('page')
   const rawLimit = c.req.query('size')
 
-  const validate = paginationSchema.safeParse({
-    page: rawPage ? Number.parseInt(rawPage) : undefined,
-    limit: rawLimit ? Number.parseInt(rawLimit) : undefined,
-  })
+  const parsedPagination = parsePagination(rawPage, rawLimit)
 
-  if (!validate.success) {
+  if (!parsedPagination.success) {
     return {
       page: 1,
       limit: defaultLimit,
     }
   }
 
-  const { page, limit } = validate.data
-
   return {
-    page: page || 1,
-    limit: limit || defaultLimit,
+    page: parsedPagination.data.page,
+    limit: parsedPagination.data.limit || defaultLimit,
   }
+}
+
+function parsePagination(page?: string, limit?: string) {
+  return paginationSchema.safeParse({
+    page: page ? Number.parseInt(page) : undefined,
+    limit: limit ? Number.parseInt(limit) : undefined,
+  })
 }
