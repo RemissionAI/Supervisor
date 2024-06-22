@@ -15,7 +15,7 @@ const config = {
     },
 }
 
-const { errors, data } = await trainStore.list(1, 100)
+const { errors, data } = await trainStore.list(1, 10)
 
 if (!errors)
     result.value = data!
