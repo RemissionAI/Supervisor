@@ -13,4 +13,7 @@ export default defineNuxtConfig({
       position: "top-0 bottom-auto",
     },
   },
+  colorMode: {
+    preference: "light",
+  },
 });
