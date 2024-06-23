@@ -54,6 +54,10 @@ class TrainService {
   async getCount() {
     return await this.client.get<{ count: number }>(`${this.resource}/list/count`)
   }
+
+  async getKnowledgeCount(taskId: number) {
+    return await this.client.get<{count: number}>(`${this.resource}/${taskId}/count`)
+  }
 }
 
 export default new TrainService()

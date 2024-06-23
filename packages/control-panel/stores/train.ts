@@ -13,9 +13,14 @@ export const useTrainStore = defineStore('train', () => {
     return await TrainService.getCount()
   }
 
+  const getKnowledgeCount = async (taskId: number) => {
+    return await TrainService.getKnowledgeCount(taskId)
+  }
+
   return {
     list,
     getCount,
-    listKnowledge
+    listKnowledge,
+    getKnowledgeCount
   }
 })

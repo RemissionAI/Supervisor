@@ -98,6 +98,10 @@ export async function processQueueTask(
 ) {
   const taskRepo = new TrainingTaskRepository(env)
 
+  await taskRepo.update(taskId, {
+    status: 'processing',
+  })
+
   const results = await Promise.allSettled(
     links.map(link =>
       handleKnowledge(env, taskId, 'url', link).catch(error => ({
