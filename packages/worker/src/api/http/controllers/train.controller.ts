@@ -2,6 +2,8 @@ import type { Context } from 'hono'
 import * as TrainService from '~/core/services/train.service'
 import ResponseHandler from '~/lib/utils/response-handler'
 import { TrainingTaskRepository } from '~/core/repositories/train.repository'
+import { getPagination } from '~/lib/utils/pagination'
+import type { TrainingTask } from '~/common/interfaces/train.interface'
 
 export async function load(c: Context) {
   const body = await c.req.json()
@@ -32,7 +34,9 @@ export async function loadSitemap(c: Context) {
 export async function list(c: Context) {
   const trainingRepo = new TrainingTaskRepository(c.env)
 
-  const data = await trainingRepo.list(1, 100)
+  const pagination = getPagination(c)
+
+  const data = (await trainingRepo.list(pagination.page, pagination.limit)).map(task => task.toJSON<TrainingTask>())
 
   return ResponseHandler.success(c, data)
 }

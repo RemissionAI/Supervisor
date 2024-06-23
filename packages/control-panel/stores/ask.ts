@@ -1,11 +1,11 @@
-import AskSerivce, { type AskQuestionParams } from "~/services/ask";
+import AskService from '~/services/ask'
 
-export const useAskStore = defineStore("ask", () => {
+export const useAskStore = defineStore('ask', () => {
   const question = async (question: string) => {
-    return await AskSerivce.question({ question });
-  };
+    return await AskService.question({ question })
+  }
 
   return {
-    question
-  };
-});
+    question,
+  }
+})

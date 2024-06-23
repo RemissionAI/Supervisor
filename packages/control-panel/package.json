@@ -1,24 +1,29 @@
 {
   "name": "nuxt-app",
-  "private": true,
   "type": "module",
+  "private": true,
   "scripts": {
     "build": "nuxt build",
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
-  },
-  "devDependencies": {
-    "@nuxt/devtools": "latest",
-    "@nuxt/ui": "^2.17.0",
-    "nuxt": "^3.12.1",
-    "sass": "^1.77.5"
+    "postinstall": "nuxt prepare",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
   },
   "dependencies": {
     "@pinia/nuxt": "^0.5.1",
+    "@vueuse/core": "^10.11.0",
     "markdown-it": "^14.1.0",
     "pinia": "^2.1.7",
     "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@antfu/eslint-config": "^2.18.1",
+    "@nuxt/devtools": "latest",
+    "@nuxt/ui": "^2.17.0",
+    "eslint": "^9.3.0",
+    "nuxt": "^3.12.1",
+    "sass": "^1.77.5"
   }
 }
