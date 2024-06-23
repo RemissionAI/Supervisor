@@ -5,7 +5,12 @@ export const useTrainStore = defineStore('train', () => {
     return await TrainService.list(page, limit)
   }
 
+  const getCount = async () => {
+    return await TrainService.getCount()
+  }
+
   return {
     list,
+    getCount,
   }
 })

@@ -36,6 +36,10 @@ class TrainService {
   async list(page: number = 1, limit: number = 10) {
     return await this.client.get<TrainingTask[]>(`${this.resource}/list?page=${page}&size=${limit}`)
   }
+
+  async getCount() {
+    return await this.client.get<{ count: number }>(`${this.resource}/list/count`)
+  }
 }
 
 export default new TrainService()

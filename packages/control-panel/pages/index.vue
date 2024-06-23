@@ -1,9 +1,18 @@
 <script setup lang="ts">
+import { computed, ref } from 'vue'
 import { useTrainStore } from '~/stores/train'
 import type { TrainingTask } from '~/services/train'
 
-const result = ref<TrainingTask[]>([])
 const trainStore = useTrainStore()
+
+const result = ref<TrainingTask[]>([])
+const sort = ref({ column: 'status', direction: 'asc' as const })
+const page = ref(1)
+const pageCount = ref(6)
+const pageTotal = ref(0)
+
+const pageFrom = computed(() => (page.value - 1) * pageCount.value + 1)
+const pageTo = computed(() => Math.min(page.value * pageCount.value, pageTotal.value))
 
 const config = {
   td: {
@@ -15,43 +24,25 @@ const config = {
   },
 }
 
-const { errors, data } = await trainStore.list(1, 10)
+const columns = [
+  { key: 'id', label: '#', sortable: true },
+  { key: 'data', label: 'Data', sortable: true },
+  { key: 'status', label: 'Status', sortable: true },
+  { key: 'details', label: 'Details', sortable: false },
+  { key: 'startedAt', label: 'Started at', sortable: false },
+  { key: 'finishedAt', label: 'Finished at', sortable: false },
+]
 
-if (!errors)
-  result.value = data!
+async function fetchData() {
+  const { errors, data } = await trainStore.list(page.value, pageCount.value)
+  if (!errors) {
+    result.value = data!
+  }
+  const { data: tableCount } = await trainStore.getCount()
+  pageTotal.value = tableCount?.count || 0
+}
 
-const columns = [{
-  key: 'id',
-  label: '#',
-  sortable: true,
-}, {
-  key: 'data',
-  label: 'Data',
-  sortable: true,
-}, {
-  key: 'status',
-  label: 'Status',
-  sortable: true,
-}, {
-  key: 'details',
-  label: 'Details',
-  sortable: false,
-}, {
-  key: 'startedAt',
-  label: 'Started at',
-  sortable: false,
-}, {
-  key: 'finishedAt',
-  label: 'Finished at',
-  sortable: false,
-}]
-
-const sort = ref({ column: 'status', direction: 'asc' as const })
-const page = ref(1)
-const pageCount = ref(10)
-const pageTotal = ref(200)
-const pageFrom = computed(() => (page.value - 1) * pageCount.value + 1)
-const pageTo = computed(() => Math.min(page.value * pageCount.value, pageTotal.value))
+fetchData()
 </script>
 
 <template>
@@ -67,7 +58,7 @@ const pageTo = computed(() => Math.min(page.value * pageCount.value, pageTotal.v
         <UButton class="px-0" size="xs" variant="soft" color="white" label="show data" />
         <template #panel>
           <ul class="p-4">
-            <li v-for="data in row.data" class="block">
+            <li v-for="data in row.data" :key="data.type" class="block">
               <UBadge size="xs" :label="data.type" color="gray" variant="subtle" />: {{ data.source }}
             </li>
           </ul>
@@ -80,7 +71,6 @@ const pageTo = computed(() => Math.min(page.value * pageCount.value, pageTotal.v
         variant="subtle"
       />
     </template>
-
     <template #details-data="{ row }">
       <UBadge
         v-if="row.details?.error" size="xs" :label="row.details?.error" color="red" variant="subtle"
@@ -100,7 +90,6 @@ const pageTo = computed(() => Math.min(page.value * pageCount.value, pageTotal.v
         results
       </span>
     </div>
-
     <UPagination
       v-model="page" :page-count="pageCount" :total="pageTotal" :ui="{
         wrapper: 'flex items-center gap-1',
