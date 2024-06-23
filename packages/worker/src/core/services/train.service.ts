@@ -16,7 +16,7 @@ async function handleKnowledge(
   taskId: number,
   type: 'url' | 'pdf',
   source: string | File,
-) {
+): Promise<void> {
   const knowledgeRepo = new KnowledgeRepository(env)
   const documents = await fetchSourceDocuments(env, type, source, { taskId })
   await addDocumentsToStore(env, documents)
@@ -24,7 +24,7 @@ async function handleKnowledge(
   await knowledgeRepo.insert({
     type,
     taskId,
-    content: documents.map(content => content.pageContent).join('\n--\n'),
+    content: documents.map(content => content.pageContent).join('\n\n'),
     source: typeof source === 'string' ? source : source.name,
     createdAt: new Date(),
   })
@@ -33,7 +33,7 @@ async function handleKnowledge(
 export async function getSitemapBatches(
   sitemaps: SitemapType[],
   batchSize: number = 20,
-) {
+): Promise<string[][]> {
   const batches: string[][] = []
 
   for (const sitemap of sitemaps) {
@@ -48,7 +48,10 @@ export async function getSitemapBatches(
   return batches
 }
 
-export async function process(env: Bindings, inputData: unknown) {
+export async function process(
+  env: Bindings,
+  inputData: unknown,
+): Promise<void> {
   const validatedData = LoadKnowledgeSchema.parse(inputData)
   const taskRepo = new TrainingTaskRepository(env)
 
@@ -83,9 +86,7 @@ export async function process(env: Bindings, inputData: unknown) {
         links: batch,
         batchIndex: generateRandomString(4),
       },
-      {
-        delaySeconds,
-      },
+      { delaySeconds },
     )
   }
 }
@@ -95,33 +96,34 @@ export async function processQueueTask(
   taskId: number,
   links: string[],
   batchIndex: string,
-) {
+): Promise<void> {
   const taskRepo = new TrainingTaskRepository(env)
 
-  await taskRepo.update(taskId, {
-    status: 'processing',
-  })
+  await taskRepo.update(taskId, { status: 'processing' })
 
   const results = await Promise.allSettled(
     links.map(link =>
       handleKnowledge(env, taskId, 'url', link).catch(error => ({
         link,
-        reason: error.message || String(error),
+        reason: error instanceof Error ? error.message : String(error),
       })),
     ),
   )
 
   const failedLinks = results
-    .filter(result => result.status === 'rejected')
+    .filter(
+      (result): result is PromiseRejectedResult => result.status === 'rejected',
+    )
     .map((result, index) => ({
       url: links[index],
-      reason: (result as PromiseRejectedResult).reason,
+      reason: result.reason,
     }))
 
   const existingTask = await taskRepo.get(taskId)
 
-  if (!existingTask)
-    throw new Error('task not found')
+  if (!existingTask) {
+    throw new Error('Task not found')
+  }
 
   const updatedDetails = {
     ...existingTask.details,
@@ -133,16 +135,18 @@ export async function processQueueTask(
   }
 
   if (failedLinks.length > 0) {
-    console.error(`Failed to process some links in sitemap`, {
+    console.error('Failed to process some links in sitemap', {
       taskId,
       failedLinks,
     })
   }
 
+  const isCompleted = updatedDetails.batchesCompleted.length === existingTask.details?.totalBatches
+
   await taskRepo.update(taskId, {
     details: updatedDetails,
-    status: updatedDetails.batchesCompleted.length === existingTask.details?.totalBatches ? 'completed' : existingTask.status,
-    finishedAt: updatedDetails.batchesCompleted.length === existingTask.details?.totalBatches ? new Date() : null,
+    status: isCompleted ? 'completed' : existingTask.status,
+    finishedAt: isCompleted ? new Date() : null,
   })
 }
 
@@ -185,15 +189,15 @@ async function loadDocuments(
       })
     case 'pdf':
       return await DataLoader.pdf(source as File)
-    default: {
-      const errorMsg = `Unsupported document type: ${type}`
-      console.error(errorMsg, { type, source })
-      throw new Error(errorMsg)
-    }
+    default:
+      throw new Error(`Unsupported document type: ${type}`)
   }
 }
 
-export async function trainWithSinglePdf(env: Bindings, body: unknown) {
+export async function trainWithSinglePdf(
+  env: Bindings,
+  body: unknown,
+): Promise<void> {
   const data = PdfLoadSchema.parse(body)
   const pdfFile = data.source
 
@@ -201,12 +205,7 @@ export async function trainWithSinglePdf(env: Bindings, body: unknown) {
   const knowledgeRepo = new KnowledgeRepository(env)
 
   const newTask = await taskRepo.insert({
-    data: [
-      {
-        type: 'pdf',
-        source: pdfFile.name as unknown as File,
-      },
-    ],
+    data: [{ type: 'pdf', source: pdfFile.name as unknown as File }],
     status: 'processing',
     startedAt: new Date(),
   })
