@@ -29,12 +29,26 @@ export interface TrainingTask {
   finishedAt: Date | null
 }
 
+export interface Knowledge {
+  id: number
+  type: string
+  source: string
+  taskId: number
+  content: string | null
+  createdAt: Date | null
+  updatedAt: Date | null
+}
+
 class TrainService {
   private resource = '/train'
   private client = client
 
   async list(page: number = 1, limit: number = 10) {
     return await this.client.get<TrainingTask[]>(`${this.resource}/list?page=${page}&size=${limit}`)
+  }
+
+  async listKnowledge(taskId: number, page: number = 1, limit: number = 10) {
+    return await this.client.get<Knowledge[]>(`${this.resource}/${taskId}?page=${page}&size=${limit}`)
   }
 
   async getCount() {

@@ -67,6 +67,12 @@ fetchData()
     v-model:sort="sort" :columns="columns" :rows="result" :ui="config" sort-asc-icon="i-heroicons-arrow-up"
     sort-desc-icon="i-heroicons-arrow-down" sort-mode="manual" :loading="loading"
   >
+    <template #id-data="{ row }">
+      <NuxtLink :to="`/tasks/${row.id}`">
+        {{ row.id }}
+      </NuxtLink>
+    </template>
+
     <template #data-data="{ row }">
       <UPopover>
         <UButton class="px-0" size="xs" variant="soft" color="white" label="show data" />
