@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useTrainStore } from '~/stores/train'
 import type { TrainingTask } from '~/services/train'
 
@@ -8,8 +8,9 @@ const trainStore = useTrainStore()
 const result = ref<TrainingTask[]>([])
 const sort = ref({ column: 'status', direction: 'asc' as const })
 const page = ref(1)
-const pageCount = ref(6)
+const pageCount = ref(8)
 const pageTotal = ref(0)
+const loading = ref(false)
 
 const pageFrom = computed(() => (page.value - 1) * pageCount.value + 1)
 const pageTo = computed(() => Math.min(page.value * pageCount.value, pageTotal.value))
@@ -34,13 +35,26 @@ const columns = [
 ]
 
 async function fetchData() {
-  const { errors, data } = await trainStore.list(page.value, pageCount.value)
-  if (!errors) {
-    result.value = data!
+  loading.value = true
+  try {
+    const { errors, data } = await trainStore.list(page.value, pageCount.value)
+    if (!errors) {
+      result.value = data!
+    }
+    const { data: tableCount } = await trainStore.getCount()
+    pageTotal.value = tableCount?.count || 0
   }
-  const { data: tableCount } = await trainStore.getCount()
-  pageTotal.value = tableCount?.count || 0
+  catch (error) {
+    console.error('Error fetching data:', error)
+  }
+  finally {
+    loading.value = false
+  }
 }
+
+watch(page, () => {
+  fetchData()
+})
 
 fetchData()
 </script>
@@ -51,7 +65,7 @@ fetchData()
   </h2>
   <UTable
     v-model:sort="sort" :columns="columns" :rows="result" :ui="config" sort-asc-icon="i-heroicons-arrow-up"
-    sort-desc-icon="i-heroicons-arrow-down" sort-mode="manual"
+    sort-desc-icon="i-heroicons-arrow-down" sort-mode="manual" :loading="loading"
   >
     <template #data-data="{ row }">
       <UPopover>
