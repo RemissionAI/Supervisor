@@ -10,6 +10,7 @@ const route = useRoute()
 
 const result = ref<Knowledge[]>([])
 const page = ref(1)
+const knowledgeCount = ref(0)
 const pageCount = ref(20)
 const loading = ref(false)
 const hasMore = ref(true)
@@ -34,6 +35,9 @@ async function fetchData() {
         page.value++
       }
     }
+
+    const { data: total } = await trainStore.getKnowledgeCount(Number(route.params.id))
+    knowledgeCount.value = total?.count || 0
   }
   catch (error) {
     console.error('Error fetching data:', error)
@@ -74,7 +78,7 @@ fetchData()
 <template>
   <div class="container mx-auto px-4">
     <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">
-      Task: {{ route.params.id }}
+      Task: {{ route.params.id }} Total: {{ knowledgeCount }}
     </h2>
     <UModal v-model="isOpen">
       <div class="p-4">

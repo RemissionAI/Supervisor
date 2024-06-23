@@ -1,4 +1,4 @@
-import { asc, eq } from 'drizzle-orm'
+import { asc, count, eq } from 'drizzle-orm'
 import { KnowledgeModel } from '../models/knowledge.model'
 import { BaseRepository } from './base.repository'
 import { knowledge } from '~/config/db/schema'
@@ -21,9 +21,7 @@ export class KnowledgeRepository extends BaseRepository {
    * @param knowledge - The knowledge to be inserted.
    * @returns The knowledge.
    */
-  async insert(
-    data: InsertKnowledge,
-  ): Promise<KnowledgeModel> {
+  async insert(data: InsertKnowledge): Promise<KnowledgeModel> {
     try {
       const result = await this.db
         .insert(this.table)
@@ -50,7 +48,10 @@ export class KnowledgeRepository extends BaseRepository {
     pageSize: number,
   ): Promise<KnowledgeModel[]> {
     try {
-      const query = this.db.select().from(this.table).where(eq(this.table.taskId, taskId))
+      const query = this.db
+        .select()
+        .from(this.table)
+        .where(eq(this.table.taskId, taskId))
 
       const paginatedResults = await this.withPagination(
         query.$dynamic(),
@@ -63,6 +64,20 @@ export class KnowledgeRepository extends BaseRepository {
     }
     catch (err) {
       throw new Error(`Error fetching knowledge list: ${err}`)
+    }
+  }
+
+  async getCount(taskId: number): Promise<{ count: number }> {
+    try {
+      const [result] = await this.db
+        .select({ count: count() })
+        .from(this.table)
+        .where(eq(this.table.taskId, taskId))
+
+      return result
+    }
+    catch (err) {
+      throw new Error(`Error getting knowledge items count`)
     }
   }
 }
