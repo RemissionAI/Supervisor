@@ -33,3 +33,5 @@ export const LoadKnowledgeSchema = z.object({
 })
 
 export const PdfLoadSchema = PdfTypeSchema
+
+export const idSchema = z.number({ coerce: true })

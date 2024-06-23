@@ -1,4 +1,4 @@
-import { asc, eq } from 'drizzle-orm'
+import { asc, count, desc, eq } from 'drizzle-orm'
 import { TrainingTaskModel } from '../models/train.model'
 import { BaseRepository } from './base.repository'
 import { trainingTasks } from '~/config/db/schema'
@@ -68,7 +68,7 @@ export class TrainingTaskRepository extends BaseRepository {
 
       const paginatedResults = await this.withPagination(
         query.$dynamic(),
-        asc(this.trainingTaskTable.id),
+        desc(this.trainingTaskTable.id),
         page,
         pageSize,
       )
@@ -77,6 +77,17 @@ export class TrainingTaskRepository extends BaseRepository {
     }
     catch (err) {
       throw new Error(`Error fetching training tasks: ${err}`)
+    }
+  }
+
+  async getCount(): Promise<{ count: number }> {
+    try {
+      const [result] = await this.db.select({ count: count() }).from(this.trainingTaskTable)
+
+      return result
+    }
+    catch (err) {
+      throw new Error(`Error getting training tasks count`)
     }
   }
 
