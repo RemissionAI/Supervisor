@@ -1,33 +1,32 @@
 <script setup lang="ts">
-import { useStreamingFetch } from '~/composables/useStreamingFetch';
+import { useStreamingFetch } from '~/composables/useStreamingFetch'
 
-const { result, input, handleSubmit, isLoading, stop} = useStreamingFetch(`${useRuntimeConfig().public.apiBaseUrl}/ask/stream`);
-
+const { result, input, handleSubmit, isLoading, stop } = useStreamingFetch(`${useRuntimeConfig().public.apiBaseUrl}/ask/stream`)
 </script>
 
 <template>
-    <UContainer>
-        <h2 class="font-semibold text-xl text-gray-900 dark:text-white leading-tight mb-5">
-            Playground
-        </h2>
-        <UCard>
-            <div class="flex items-center w-full justify-start ">
-                <UInput class="w-5/6" ref="inputRef" icon="i-heroicons-sparkles-20-solid" @keyup.enter="handleSubmit"
-                    size="xl" :color="isLoading ? 'green' : 'white'" :trailing="false" placeholder="Ask a question"
-                    focus v-model="input" :disabled="isLoading" />
+  <UContainer>
+    <h2 class="font-semibold text-xl text-gray-900 dark:text-white leading-tight mb-5">
+      Playground
+    </h2>
+    <UCard>
+      <div class="flex items-center w-full justify-start ">
+        <UInput
+          ref="inputRef" class="w-5/6" icon="i-heroicons-sparkles-20-solid" size="xl"
+          :color="isLoading ? 'green' : 'white'" v-model="input" :trailing="false" placeholder="Ask a question"
+          focus :disabled="isLoading" @keyup.enter="handleSubmit"
+        />
 
-                <UButton class="ml-5" v-if="isLoading" @click="stop">
-                    Stop
-                </UButton>
-            </div>
+        <UButton v-if="isLoading" class="ml-5" @click="stop">
+          Stop
+        </UButton>
+      </div>
 
-
-            <div class="w-full text-base mt-12" v-show="result">
-                <MarkdownRenderer :source="result" />
-            </div>
-
-        </UCard>
-    </UContainer>
+      <div v-show="result" class="w-full text-base mt-12">
+        <MarkdownRenderer :source="result" />
+      </div>
+    </UCard>
+  </UContainer>
 </template>
 
 <style scoped>
