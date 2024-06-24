@@ -29,6 +29,7 @@ function initializeModel(
     return new ChatAnthropic({
       model: 'claude-3-5-sonnet-20240620',
       apiKey: modelSettings.anthropicKey,
+      verbose: true,
     })
   }
   else {

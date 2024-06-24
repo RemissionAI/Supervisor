@@ -15,7 +15,7 @@ const markdown = new MarkdownIt()
   <div class="markdown-content" v-html="markdown.render(source)" />
 </template>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .markdown-content {
     max-width: 100%;
     overflow-x: auto;
