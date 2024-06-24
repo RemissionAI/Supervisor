@@ -98,7 +98,7 @@ getTaskData()
       </div>
     </UModal>
     <UTabs :items="tabs">
-      <template #failedLinks>
+      <template v-if="task?.details?.failedLinks" #failedLinks>
         <ul class="space-y-4">
           <li
             v-for="item in task?.details?.failedLinks" :key="item.url"
@@ -118,7 +118,7 @@ getTaskData()
           </li>
         </ul>
       </template>
-      <template #knowledge>
+      <template v-if="result" #knowledge>
         <ul class="space-y-4">
           <li
             v-for="item in result" :key="item.id"
