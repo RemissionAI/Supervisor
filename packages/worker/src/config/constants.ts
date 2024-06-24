@@ -45,4 +45,9 @@ export const SUPPORTED_TEXT_GENERATION_MODELS = [
     id: 'gpt-3.5-turbo',
     label: 'GPT-3.5 Turbo',
   },
+  {
+    provider: 'anthropic',
+    id: 'claude-3-5-sonnet-20240620',
+    label: 'Claude 3.5 Sonnet',
+  },
 ]

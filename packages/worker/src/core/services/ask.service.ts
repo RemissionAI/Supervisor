@@ -2,6 +2,7 @@ import { ChatCloudflareWorkersAI } from '@langchain/cloudflare'
 import { HttpResponseOutputParser } from 'langchain/output_parsers'
 import type { Context } from 'hono'
 import { ChatOpenAI } from '@langchain/openai'
+import { ChatAnthropic } from '@langchain/anthropic'
 import { askQuestionSchema, chatQuestionSchema } from '~/lib/validations/ask.validation'
 import { createConversationalRetrievalChain } from '~/lib/utils/conversation'
 import VectoreStore from '~/lib/utils/ai/store'
@@ -17,11 +18,18 @@ async function getModelSettings(cache: KvCache): Promise<ModelSettings | null> {
 function initializeModel(
   env: Bindings,
   modelSettings: ModelSettings | null,
-): ChatCloudflareWorkersAI | ChatOpenAI {
+) {
   if (modelSettings?.model?.provider === 'openai' && modelSettings.openaiKey) {
     return new ChatOpenAI({
       model: modelSettings.model.id,
       openAIApiKey: modelSettings.openaiKey,
+    })
+  }
+  else if (modelSettings?.model?.provider === 'anthropic' && modelSettings.anthropicKey) {
+    return new ChatAnthropic({
+      model: 'claude-3-5-sonnet-20240620',
+      apiKey: modelSettings.anthropicKey,
+      verbose: true,
     })
   }
   else {
