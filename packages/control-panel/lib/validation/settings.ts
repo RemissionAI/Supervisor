@@ -3,11 +3,12 @@ import z from 'zod'
 export const settingsSchema = z.object({
   model: z
     .object({
-      provider: z.enum(['workers-ai', 'openai']),
+      provider: z.enum(['workers-ai', 'openai', 'anthropic']),
       id: z.string(),
     })
     .optional(),
   openaiKey: z.string().optional(),
+  anthropicKey: z.string().optional(),
   systemPrompt: z.string().optional(),
 })
 

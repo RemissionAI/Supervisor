@@ -17,6 +17,7 @@ const selectedModel = ref(settings.value?.model || textGenerationModels.value[0]
 const state = reactive({
   model: settings.value?.model,
   openaiKey: settings.value?.openaiKey,
+  anthropicKey: settings.value?.anthropicKey,
   systemPrompt: settings.value?.systemPrompt,
 })
 
@@ -57,6 +58,10 @@ async function onSubmit(event: FormSubmitEvent<Settings>) {
 
       <UFormGroup label="OpenAI key" name="openaiKey">
         <UInput v-model="state.openaiKey" type="openaiKey" />
+      </UFormGroup>
+
+      <UFormGroup label="Anthropic key" name="anthropicKey">
+        <UInput v-model="state.anthropicKey" type="anthropicKey" />
       </UFormGroup>
 
       <UFormGroup label="System Prompt" name="systemPrompt">
