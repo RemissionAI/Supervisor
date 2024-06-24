@@ -48,7 +48,11 @@ class TrainService {
   }
 
   async listKnowledge(taskId: number, page: number = 1, limit: number = 10) {
-    return await this.client.get<Knowledge[]>(`${this.resource}/${taskId}?page=${page}&size=${limit}`)
+    return await this.client.get<Knowledge[]>(`${this.resource}/${taskId}/knowledge?page=${page}&size=${limit}`)
+  }
+
+  async getTask(taskId: number) {
+    return await this.client.get<TrainingTask>(`${this.resource}/${taskId}`)
   }
 
   async getCount() {
@@ -56,7 +60,7 @@ class TrainService {
   }
 
   async getKnowledgeCount(taskId: number) {
-    return await this.client.get<{count: number}>(`${this.resource}/${taskId}/count`)
+    return await this.client.get<{ count: number }>(`${this.resource}/${taskId}/count`)
   }
 }
 

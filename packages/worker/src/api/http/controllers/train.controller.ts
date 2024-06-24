@@ -69,6 +69,16 @@ export async function getTaskKnowledgeItemsCount(c: Context) {
   return ResponseHandler.success(c, count)
 }
 
+export async function getTask(c: Context) {
+  const trainingRepo = new TrainingTaskRepository(c.env)
+  const id = c.req.param('task_id')
+
+  const taskId = idSchema.parse(id)
+  const task = await trainingRepo.get(taskId)
+
+  return ResponseHandler.success(c, task)
+}
+
 export async function getTrainingTasksCount(c: Context) {
   const trainingRepo = new TrainingTaskRepository(c.env)
 

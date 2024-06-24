@@ -3,7 +3,7 @@ import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { useInfiniteScroll } from '@vueuse/core'
 import { useTrainStore } from '~/stores/train'
-import type { Knowledge } from '~/services/train'
+import type { Knowledge, TrainingTask } from '~/services/train'
 
 const trainStore = useTrainStore()
 const route = useRoute()
@@ -16,7 +16,9 @@ const loading = ref(false)
 const hasMore = ref(true)
 const isOpen = ref(false)
 const itemContent = ref<string>('')
+const task = ref<TrainingTask>()
 
+const tabs = [{ slot: 'knowledge', label: 'Knowledge' }, { slot: 'failedLinks', label: 'Failed Links' }]
 const target = ref(null)
 
 async function fetchData() {
@@ -35,9 +37,6 @@ async function fetchData() {
         page.value++
       }
     }
-
-    const { data: total } = await trainStore.getKnowledgeCount(Number(route.params.id))
-    knowledgeCount.value = total?.count || 0
   }
   catch (error) {
     console.error('Error fetching data:', error)
@@ -45,6 +44,18 @@ async function fetchData() {
   finally {
     loading.value = false
   }
+}
+
+async function getTaskData() {
+  const taskId = Number(route.params.id)
+
+  const { errors, data } = await trainStore.getTask(taskId)
+  if (!errors) {
+    task.value = data!
+  }
+
+  const { data: total } = await trainStore.getKnowledgeCount(taskId)
+  knowledgeCount.value = total?.count || 0
 }
 
 useInfiniteScroll(
@@ -73,6 +84,7 @@ function showContent(content: string) {
 }
 
 fetchData()
+getTaskData()
 </script>
 
 <template>
@@ -85,32 +97,59 @@ fetchData()
         <MarkdownRenderer :source="itemContent" />
       </div>
     </UModal>
-    <ul class="space-y-4">
-      <li v-for="item in result" :key="item.id" class="bg-white dark:bg-gray-900 rounded-lg shadow-md overflow-hidden">
-        <div class="p-4 flex items-start">
-          <UIcon :name="getIconName(item.type)" class="text-3xl mt-1 mr-4 text-primary-400" />
-          <div class="flex-grow">
-            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
-              {{ item.content?.slice(0, 60) }}...
-            </h3>
-            <p class="text-sm text-gray-600 dark:text-gray-300">
-              Source: {{ item.source }}
-            </p>
-            <p class="text-sm text-gray-500 dark:text-gray-400">
-              Created: {{ new Date(item.createdAt!).toLocaleString() }}
-            </p>
-          </div>
-          <UButton variant="solid" color="gray" label="View Content" @click="showContent(item.content!)" />
+    <UTabs :items="tabs">
+      <template v-if="task?.details?.failedLinks" #failedLinks>
+        <ul class="space-y-4">
+          <li
+            v-for="item in task?.details?.failedLinks" :key="item.url"
+            class="bg-white dark:bg-gray-900 rounded-lg shadow-md overflow-hidden"
+          >
+            <div class="p-4 flex items-start">
+              <div class="flex-grow">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+                  url: {{ item.url }}
+                </h3>
+                <p class="text-sm text-gray-600 dark:text-gray-300">
+                  reason: {{ item.reason }}
+                </p>
+              </div>
+              <UButton variant="solid" color="gray" label="Retrain" />
+            </div>
+          </li>
+        </ul>
+      </template>
+      <template v-if="result" #knowledge>
+        <ul class="space-y-4">
+          <li
+            v-for="item in result" :key="item.id"
+            class="bg-white dark:bg-gray-900 rounded-lg shadow-md overflow-hidden"
+          >
+            <div class="p-4 flex items-start">
+              <UIcon :name="getIconName(item.type)" class="text-3xl mt-1 mr-4 text-primary-400" />
+              <div class="flex-grow">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+                  {{ item.content?.slice(0, 60) }}...
+                </h3>
+                <p class="text-sm text-gray-600 dark:text-gray-300">
+                  Source: {{ item.source }}
+                </p>
+                <p class="text-sm text-gray-500 dark:text-gray-400">
+                  Created: {{ new Date(item.createdAt!).toLocaleString() }}
+                </p>
+              </div>
+              <UButton variant="solid" color="gray" label="View Content" @click="showContent(item.content!)" />
+            </div>
+          </li>
+        </ul>
+        <div v-show="hasMore" ref="target" class="text-center py-8">
+          <p v-if="loading" class="text-gray-600 dark:text-gray-300">
+            Loading documents...
+          </p>
+          <p v-else class="text-gray-500 dark:text-gray-400">
+            Scroll for more
+          </p>
         </div>
-      </li>
-    </ul>
-    <div v-show="hasMore" ref="target" class="text-center py-8">
-      <p v-if="loading" class="text-gray-600 dark:text-gray-300">
-        Loading documents...
-      </p>
-      <p v-else class="text-gray-500 dark:text-gray-400">
-        Scroll for more
-      </p>
-    </div>
+      </template>
+    </UTabs>
   </div>
 </template>

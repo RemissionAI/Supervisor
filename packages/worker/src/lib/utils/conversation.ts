@@ -29,7 +29,7 @@ function formatDocuments(docs: Document[]): string {
 
 function createAIKnowledgeRetriever(aiKnowledgeVectorstore: VectorStore) {
   return aiKnowledgeVectorstore
-    .asRetriever()
+    .asRetriever({ k: 5 })
     .withConfig({ runName: 'AIKnowledgeRetriever' })
 }
 

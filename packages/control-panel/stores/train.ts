@@ -5,12 +5,16 @@ export const useTrainStore = defineStore('train', () => {
     return await TrainService.list(page, limit)
   }
 
-  const listKnowledge = async (taskId: number, page?:number, limit?: number) => {
+  const listKnowledge = async (taskId: number, page?: number, limit?: number) => {
     return await TrainService.listKnowledge(taskId, page, limit)
   }
 
   const getCount = async () => {
     return await TrainService.getCount()
+  }
+
+  const getTask = async (taskId: number) => {
+    return await TrainService.getTask(taskId)
   }
 
   const getKnowledgeCount = async (taskId: number) => {
@@ -21,6 +25,7 @@ export const useTrainStore = defineStore('train', () => {
     list,
     getCount,
     listKnowledge,
-    getKnowledgeCount
+    getKnowledgeCount,
+    getTask,
   }
 })

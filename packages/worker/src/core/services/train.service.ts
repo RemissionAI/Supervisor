@@ -102,12 +102,7 @@ export async function processQueueTask(
   await taskRepo.update(taskId, { status: 'processing' })
 
   const results = await Promise.allSettled(
-    links.map(link =>
-      handleKnowledge(env, taskId, 'url', link).catch(error => ({
-        link,
-        reason: error instanceof Error ? error.message : String(error),
-      })),
-    ),
+    links.map(link => handleKnowledge(env, taskId, 'url', link)),
   )
 
   const failedLinks = results
@@ -116,7 +111,9 @@ export async function processQueueTask(
     )
     .map((result, index) => ({
       url: links[index],
-      reason: result.reason,
+      reason: (result as PromiseRejectedResult).reason instanceof Error
+        ? (result as PromiseRejectedResult).reason.message
+        : String((result as PromiseRejectedResult).reason),
     }))
 
   const existingTask = await taskRepo.get(taskId)
