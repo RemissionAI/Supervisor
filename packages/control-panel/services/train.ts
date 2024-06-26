@@ -1,5 +1,5 @@
 import client from '~/helpers/http'
-import type { AddKnowledge } from '~/lib/validation/train'
+import type { LoadWebKnowledge } from '~/lib/validation/train'
 
 export interface TrainingTaskDetails {
   error?: string
@@ -44,8 +44,15 @@ class TrainService {
   private resource = '/train'
   private client = client
 
-  async addKnowledge(payload: AddKnowledge) {
-    return await this.client.post<{ message: string }>(`${this.resource}/train/load`, payload)
+  async loadWeb(payload: LoadWebKnowledge) {
+    return await this.client.post<{ message: string }>(`${this.resource}/train/load/web`, payload)
+  }
+
+  async loadFile(file: File) {
+    const formData = new FormData()
+    formData.append('file', file)
+
+    return await this.client.post<{ message: string }>(`${this.resource}/train/load/file`, formData)
   }
 
   async list(page: number = 1, limit: number = 10) {

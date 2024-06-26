@@ -10,10 +10,10 @@ const SitemapTypeSchema = z.object({
   source: z.string().url(),
 })
 
-export const AddKnowledgeSchema = z.object({
+export const WebKnowledgeSchema = z.object({
   data: z.array(
     z.discriminatedUnion('type', [UrlTypeSchema, SitemapTypeSchema]),
   ),
 })
 
-export type AddKnowledge = z.infer<typeof AddKnowledgeSchema>
+export type LoadWebKnowledge = z.infer<typeof WebKnowledgeSchema>

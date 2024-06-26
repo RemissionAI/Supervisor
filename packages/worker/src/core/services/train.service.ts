@@ -49,7 +49,6 @@ export async function getSitemapBatches(
 
   return batches
 }
-
 export async function processWeb(
   env: Bindings,
   inputData: unknown,
@@ -57,24 +56,37 @@ export async function processWeb(
   const validatedData = LoadWebSchema.parse(inputData)
   const taskRepo = new TrainingTaskRepository(env)
 
-  const newTask = await taskRepo.insert({
-    data: validatedData.data,
-    status: 'queued',
-    startedAt: new Date(),
-  })
-
   const urlLinks = validatedData.data
     .filter(data => data.type === 'url')
     .map(link => link.source)
 
-  await queueBatch(env, newTask.id, urlLinks)
-
   const sitemaps = validatedData.data.filter(data => data.type === 'sitemap')
-  const batches = await getSitemapBatches(sitemaps)
+  const sitemapBatches = await getSitemapBatches(sitemaps)
 
-  for (let i = 0; i < batches.length; i++) {
-    const delaySeconds = (i + 1) * BATCH_DELAY_SECONDS + 5
-    await queueBatch(env, newTask.id, batches[i], delaySeconds)
+  const totalUrlBatches = urlLinks.length
+  const totalSitemapBatches = sitemapBatches.length
+  const totalBatches = totalUrlBatches + totalSitemapBatches
+
+  if (totalBatches === 0) {
+    throw new Error('No valid links or sitemaps to process')
+  }
+
+  const newTask = await taskRepo.insert({
+    data: validatedData.data,
+    status: 'queued',
+    startedAt: new Date(),
+    details: { totalBatches, batchesCompleted: [], failedLinks: [] },
+  })
+
+  if (urlLinks.length > 0) {
+    await queueBatch(env, newTask.id, urlLinks)
+  }
+
+  if (sitemapBatches.length > 0) {
+    for (let i = 0; i < sitemapBatches.length; i++) {
+      const delaySeconds = (i + 1) * BATCH_DELAY_SECONDS + 5
+      await queueBatch(env, newTask.id, sitemapBatches[i], delaySeconds)
+    }
   }
 }
 

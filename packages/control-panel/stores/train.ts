@@ -1,9 +1,9 @@
-import type { AddKnowledge } from '~/lib/validation/train'
+import type { LoadWebKnowledge } from '~/lib/validation/train'
 import TrainService from '~/services/train'
 
 export const useTrainStore = defineStore('train', () => {
-  const addKnowledge = async (payload: AddKnowledge) => {
-    return await TrainService.addKnowledge(payload)
+  const loadWebKnowledge = async (payload: LoadWebKnowledge) => {
+    return await TrainService.loadWeb(payload)
   }
 
   const list = async (page?: number, limit?: number) => {
@@ -27,7 +27,7 @@ export const useTrainStore = defineStore('train', () => {
   }
 
   return {
-    addKnowledge,
+    loadWebKnowledge,
     list,
     getCount,
     listKnowledge,
