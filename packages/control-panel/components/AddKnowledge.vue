@@ -5,8 +5,6 @@ const tabs = [{
 }, {
   slot: 'web',
   label: 'Links',
-  disabled: true,
-
 }]
 </script>
 
@@ -14,7 +12,7 @@ const tabs = [{
   <div class="add-knowledge">
     <UTabs :items="tabs">
       <template #web>
-        tobe
+        <WebKnowledgeInput />
       </template>
       <template #pdf>
         <div class="my-10">

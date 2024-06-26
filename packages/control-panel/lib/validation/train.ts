@@ -1,11 +1,11 @@
 import z from 'zod'
 
-const UrlTypeSchema = z.object({
+export const UrlTypeSchema = z.object({
   type: z.literal('url'),
   source: z.string().url(),
 })
 
-const SitemapTypeSchema = z.object({
+export const SitemapTypeSchema = z.object({
   type: z.literal('sitemap'),
   source: z.string().url(),
 })
