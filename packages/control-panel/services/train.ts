@@ -1,4 +1,5 @@
 import client from '~/helpers/http'
+import type { AddKnowledge } from '~/lib/validation/train'
 
 export interface TrainingTaskDetails {
   error?: string
@@ -42,6 +43,10 @@ export interface Knowledge {
 class TrainService {
   private resource = '/train'
   private client = client
+
+  async addKnowledge(payload: AddKnowledge) {
+    return await this.client.post<{ message: string }>(`${this.resource}/train/load`, payload)
+  }
 
   async list(page: number = 1, limit: number = 10) {
     return await this.client.get<TrainingTask[]>(`${this.resource}/list?page=${page}&size=${limit}`)

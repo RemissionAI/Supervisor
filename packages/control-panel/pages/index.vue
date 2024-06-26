@@ -11,6 +11,7 @@ const page = ref(1)
 const pageCount = ref(8)
 const pageTotal = ref(0)
 const loading = ref(false)
+const isAddKnowledgeModalOpen = ref(false)
 
 const pageFrom = computed(() => (page.value - 1) * pageCount.value + 1)
 const pageTo = computed(() => Math.min(page.value * pageCount.value, pageTotal.value))
@@ -60,9 +61,20 @@ fetchData()
 </script>
 
 <template>
-  <h2 class="font-semibold text-xl text-gray-900 dark:text-white leading-tight mb-5">
-    Knowledge
-  </h2>
+  <div class="flex items-center mb-10">
+    <h2 class="font-semibold text-xl text-gray-900 dark:text-white leading-tight">
+      Knowledge
+    </h2>
+    <UButton class="ml-auto" label="Add knowledge" size="xs" @click="isAddKnowledgeModalOpen = !isAddKnowledgeModalOpen" />
+  </div>
+
+  <UModal v-model="isAddKnowledgeModalOpen">
+    <div class="p-4">
+      <AddKnowledge />
+      <Placeholder class="h-48" />
+    </div>
+  </UModal>
+
   <UTable
     v-model:sort="sort" :columns="columns" :rows="result" :ui="config" sort-asc-icon="i-heroicons-arrow-up"
     sort-desc-icon="i-heroicons-arrow-down" sort-mode="manual" :loading="loading"
