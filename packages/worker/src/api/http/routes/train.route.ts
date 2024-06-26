@@ -4,9 +4,8 @@ import * as TrainController from '~/api/http/controllers/train.controller'
 
 export const route = new Hono<Environment>()
 
-route.post('/load', TrainController.load)
-route.post('/load-file', TrainController.loadFile)
-route.get('/sitemap', TrainController.loadSitemap)
+route.post('/load/web', TrainController.loadWeb)
+route.post('/load/file', TrainController.loadFile)
 route.get('/list', TrainController.list)
 route.get('/list/count', TrainController.getTrainingTasksCount)
 route.get('/:task_id', TrainController.getTask)

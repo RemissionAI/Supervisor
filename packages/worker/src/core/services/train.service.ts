@@ -1,9 +1,9 @@
 import type { Document } from 'langchain/document'
 import { KnowledgeRepository } from '../repositories/knowledge.repository'
-import type { SitemapType } from '~/lib/validations/train.validation'
+import type { SitemapType, UrlType } from '~/lib/validations/train.validation'
 import {
-  LoadKnowledgeSchema,
-  PdfLoadSchema,
+  LoadFileSchema,
+  LoadWebSchema,
 } from '~/lib/validations/train.validation'
 import type { Bindings } from '~/common/interfaces/common.interface'
 import { addDocumentsToStore } from '~/lib/utils/ai/embeddings'
@@ -48,11 +48,11 @@ export async function getSitemapBatches(
   return batches
 }
 
-export async function process(
+export async function processWeb(
   env: Bindings,
   inputData: unknown,
 ): Promise<void> {
-  const validatedData = LoadKnowledgeSchema.parse(inputData)
+  const validatedData = LoadWebSchema.parse(inputData)
   const taskRepo = new TrainingTaskRepository(env)
 
   const newTask = await taskRepo.insert({
@@ -191,33 +191,33 @@ async function loadDocuments(
   }
 }
 
-export async function trainWithSinglePdf(
+export async function processFile(
   env: Bindings,
   body: unknown,
 ): Promise<void> {
-  const data = PdfLoadSchema.parse(body)
-  const pdfFile = data.source
+  const data = LoadFileSchema.parse(body)
+  const file = data.source
 
   const taskRepo = new TrainingTaskRepository(env)
   const knowledgeRepo = new KnowledgeRepository(env)
 
   const newTask = await taskRepo.insert({
-    data: [{ type: 'pdf', source: pdfFile.name as unknown as File }],
+    data: [{ type: data.type, source: file.name as unknown as File }],
     status: 'processing',
     startedAt: new Date(),
   })
 
   try {
-    const documents = await fetchSourceDocuments(env, 'pdf', pdfFile, {
+    const documents = await fetchSourceDocuments(env, data.type, file, {
       taskId: newTask.id,
     })
     await addDocumentsToStore(env, documents)
 
     await knowledgeRepo.insert({
-      type: 'pdf',
+      type: data.type,
       taskId: newTask.id,
       content: documents.map(content => content.pageContent).join('\n---\n'),
-      source: pdfFile.name,
+      source: file.name,
       createdAt: new Date(),
     })
 
