@@ -1,4 +1,5 @@
 import client from '~/helpers/http'
+import type { LoadWebKnowledge } from '~/lib/validation/train'
 
 export interface TrainingTaskDetails {
   error?: string
@@ -42,6 +43,17 @@ export interface Knowledge {
 class TrainService {
   private resource = '/train'
   private client = client
+
+  async loadWeb(payload: LoadWebKnowledge) {
+    return await this.client.post<{ message: string }>(`${this.resource}/load/web`, payload)
+  }
+
+  async loadFile(file: File) {
+    const formData = new FormData()
+    formData.append('file', file)
+
+    return await this.client.post<{ message: string }>(`${this.resource}/load/file`, formData)
+  }
 
   async list(page: number = 1, limit: number = 10) {
     return await this.client.get<TrainingTask[]>(`${this.resource}/list?page=${page}&size=${limit}`)

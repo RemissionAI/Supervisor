@@ -8,10 +8,10 @@ import { KnowledgeRepository } from '~/core/repositories/knowledge.repository'
 import type { Knowledge } from '~/common/interfaces/knowledge.interface'
 import { idSchema } from '~/lib/validations/train.validation'
 
-export async function load(c: Context) {
+export async function loadWeb(c: Context) {
   const body = await c.req.json()
 
-  await TrainService.process(c.env, body)
+  await TrainService.processWeb(c.env, body)
 
   return ResponseHandler.success(c, {
     message: 'task queued',
@@ -21,7 +21,7 @@ export async function load(c: Context) {
 export async function loadFile(c: Context) {
   const body = await c.req.parseBody()
 
-  await TrainService.trainWithSinglePdf(c.env, { source: body.file, type: 'pdf' })
+  await TrainService.processFile(c.env, { source: body.file, type: 'pdf' })
 
   return ResponseHandler.success(c, {
     message: 'Noice',

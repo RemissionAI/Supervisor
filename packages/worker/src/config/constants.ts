@@ -9,6 +9,10 @@ export const JINA_READER_PREFIX = 'https://r.jina.ai/'
 
 export const KV_SETTINGS_KEY = 'internal:model-settings'
 
+// Queue
+export const BATCH_SIZE = 20
+export const BATCH_DELAY_SECONDS = 60
+
 export const SUPPORTED_TEXT_GENERATION_MODELS = [
   {
     provider: 'workers-ai',
