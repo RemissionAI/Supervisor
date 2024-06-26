@@ -45,14 +45,14 @@ class TrainService {
   private client = client
 
   async loadWeb(payload: LoadWebKnowledge) {
-    return await this.client.post<{ message: string }>(`${this.resource}/train/load/web`, payload)
+    return await this.client.post<{ message: string }>(`${this.resource}/load/web`, payload)
   }
 
   async loadFile(file: File) {
     const formData = new FormData()
     formData.append('file', file)
 
-    return await this.client.post<{ message: string }>(`${this.resource}/train/load/file`, formData)
+    return await this.client.post<{ message: string }>(`${this.resource}/load/file`, formData)
   }
 
   async list(page: number = 1, limit: number = 10) {
