@@ -5,7 +5,7 @@ const UrlTypeSchema = z.object({
   type: z.literal('url'),
   source: z.string().url(),
 })
-export type UrlType = z.infer<typeof UrlTypeSchema>;
+export type UrlType = z.infer<typeof UrlTypeSchema>
 
 const PdfTypeSchema = z.object({
   type: z.literal('pdf'),
@@ -36,3 +36,7 @@ export const LoadWebSchema = z.object({
 export const LoadFileSchema = z.discriminatedUnion('type', [PdfTypeSchema])
 
 export const idSchema = z.number({ coerce: true })
+
+export const BatchDeleteKnowledgeSchema = z.object({
+  ids: z.array(idSchema),
+})

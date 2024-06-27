@@ -74,6 +74,16 @@ class TrainService {
   async getKnowledgeCount(taskId: number) {
     return await this.client.get<{ count: number }>(`${this.resource}/${taskId}/count`)
   }
+
+  async retrainKnowledge(knowledgeId: number) {
+    return await this.client.post<{ message: string }>(`${this.resource}/retrain/${knowledgeId}`)
+  }
+
+  async batchDeleteKnowlege(ids: number[]) {
+    return await this.client.post<{ message: string }>(`${this.resource}/batch-delete-knowledge`, {
+      ids,
+    })
+  }
 }
 
 export default new TrainService()

@@ -9,6 +9,7 @@ export class KnowledgeModel extends BaseModel {
   type: string
   source: string
   content: string | null
+  documentIds: string[]
   createdAt: Date | null
   updatedAt: Date | null
 
@@ -21,6 +22,7 @@ export class KnowledgeModel extends BaseModel {
     this.type = knowledge.type
     this.source = knowledge.source
     this.content = knowledge.content
+    this.documentIds = knowledge.documentIds
     this.createdAt = knowledge.createdAt
     this.updatedAt = knowledge.updatedAt
   }

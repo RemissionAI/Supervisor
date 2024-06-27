@@ -8,13 +8,15 @@ import type {
 import {
   LoadFileSchema,
   LoadWebSchema,
+  idSchema,
 } from '~/lib/validations/train.validation'
 import type { Bindings } from '~/common/interfaces/common.interface'
-import { addDocumentsToStore } from '~/lib/utils/ai/embeddings'
+import { addDocumentsToStore, deleteDocumentsFromStore } from '~/lib/utils/ai/embeddings'
 import DataLoader from '~/lib/utils/ai/data-loader'
 import { generateRandomString } from '~/lib/utils/strings'
 import { BATCH_DELAY_SECONDS, BATCH_SIZE } from '~/config/constants'
 import { chunkArray } from '~/lib/utils/arrays'
+import { ServiceError } from '~/lib/utils/service-error'
 
 async function handleKnowledge(
   env: Bindings,
@@ -23,15 +25,73 @@ async function handleKnowledge(
   source: string | File,
 ): Promise<void> {
   const knowledgeRepo = new KnowledgeRepository(env)
+
+  const checkKnowledge = await knowledgeRepo.getBySource(
+    typeof source === 'string' ? source : source.name,
+  )
+
+  if (checkKnowledge)
+    throw ServiceError.badRequest(`Knowledge already exists.`)
+
   const documents = await fetchSourceDocuments(env, type, source, { taskId })
-  await addDocumentsToStore(env, documents)
+  const ids = await addDocumentsToStore(env, documents)
 
   await knowledgeRepo.insert({
     type,
     taskId,
     content: documents.map(doc => doc.pageContent).join('\n\n'),
     source: typeof source === 'string' ? source : source.name,
+    documentIds: ids,
     createdAt: new Date(),
+  })
+}
+
+export async function batchDeleteKnowledge(
+  env: Bindings,
+  knowledgeIds: number[],
+): Promise<void> {
+  const knowledgeRepo = new KnowledgeRepository(env)
+
+  for (const id of knowledgeIds) {
+    const knowledge = await knowledgeRepo.get(id)
+    if (knowledge) {
+      await deleteDocumentsFromStore(env, knowledge.documentIds)
+
+      await knowledgeRepo.delete(id)
+    }
+  }
+}
+
+export async function retrainKnowledge(
+  env: Bindings,
+  id: unknown,
+): Promise<void> {
+  const knowledgeId = idSchema.parse(id)
+
+  const knowledgeRepo = new KnowledgeRepository(env)
+  const knowledge = await knowledgeRepo.get(knowledgeId)
+
+  if (!knowledge)
+    throw ServiceError.badRequest(`Knowledge with id ${knowledgeId} not found`)
+
+  if (knowledge.type !== 'url')
+    throw ServiceError.notImplemented('Retraining only works for Web knowledge.')
+
+  await deleteDocumentsFromStore(env, knowledge.documentIds)
+
+  const documents = await fetchSourceDocuments(
+    env,
+    knowledge.type as 'url' | 'pdf',
+    knowledge.source,
+    { taskId: knowledge.taskId },
+  )
+
+  const newDocumentIds = await addDocumentsToStore(env, documents)
+
+  await knowledgeRepo.update(knowledgeId, {
+    content: documents.map(doc => doc.pageContent).join('\n\n'),
+    documentIds: newDocumentIds,
+    updatedAt: new Date(),
   })
 }
 
@@ -68,7 +128,7 @@ export async function processWeb(
   const totalBatches = totalUrlBatches + totalSitemapBatches
 
   if (totalBatches === 0) {
-    throw new Error('No valid links or sitemaps to process')
+    throw ServiceError.badRequest('No valid links or sitemaps to process')
   }
 
   const newTask = await taskRepo.insert({
@@ -123,7 +183,7 @@ export async function processQueueTask(
   const existingTask = await taskRepo.get(taskId)
 
   if (!existingTask) {
-    throw new Error('Task not found')
+    throw ServiceError.badRequest('Task not found')
   }
 
   const updatedDetails = updateTaskDetails(
@@ -170,7 +230,7 @@ async function fetchSourceDocuments(
       source,
       error: errorMessage,
     })
-    throw new Error(`Failed to load documents of type ${type}: ${errorMessage}`)
+    throw ServiceError.badRequest(`Failed to load documents of type ${type}: ${errorMessage}`)
   }
 }
 
@@ -187,7 +247,7 @@ async function loadDocuments(
     case 'pdf':
       return await DataLoader.pdf(source as File)
     default:
-      throw new Error(`Unsupported document type: ${type}`)
+      throw ServiceError.badRequest(`Unsupported document type: ${type}`)
   }
 }
 
@@ -196,7 +256,6 @@ export async function processFile(env: Bindings, body: unknown): Promise<void> {
   const file = data.source
 
   const taskRepo = new TrainingTaskRepository(env)
-  const knowledgeRepo = new KnowledgeRepository(env)
 
   const newTask = await taskRepo.insert({
     data: [{ type: data.type, source: file.name as unknown as File }],
@@ -205,18 +264,7 @@ export async function processFile(env: Bindings, body: unknown): Promise<void> {
   })
 
   try {
-    const documents = await fetchSourceDocuments(env, data.type, file, {
-      taskId: newTask.id,
-    })
-    await addDocumentsToStore(env, documents)
-
-    await knowledgeRepo.insert({
-      type: data.type,
-      taskId: newTask.id,
-      content: documents.map(doc => doc.pageContent).join('\n\n'),
-      source: file.name,
-      createdAt: new Date(),
-    })
+    await handleKnowledge(env, newTask.id, data.type, file)
 
     await taskRepo.update(newTask.id, {
       status: 'completed',
@@ -277,7 +325,7 @@ async function handleProcessFileError(
     finishedAt: new Date(),
   })
 
-  console.error(`Failed to train with single PDF for task ${taskId}`, {
+  console.error(`Failed to train with file for task ${taskId}`, {
     taskId,
     error: errorMessage,
   })
