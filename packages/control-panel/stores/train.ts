@@ -26,6 +26,14 @@ export const useTrainStore = defineStore('train', () => {
     return await TrainService.getKnowledgeCount(taskId)
   }
 
+  const retrainKnowledge = async (knowledgeId: number) => {
+    return await TrainService.retrainKnowledge(knowledgeId)
+  }
+
+  const batchDeleteKnowledge = async (ids: number[]) => {
+    return await TrainService.batchDeleteKnowlege(ids)
+  }
+
   return {
     loadWebKnowledge,
     list,
@@ -33,5 +41,7 @@ export const useTrainStore = defineStore('train', () => {
     listKnowledge,
     getKnowledgeCount,
     getTask,
+    retrainKnowledge,
+    batchDeleteKnowledge
   }
 })

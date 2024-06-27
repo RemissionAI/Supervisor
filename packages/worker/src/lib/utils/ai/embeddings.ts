@@ -8,9 +8,19 @@ export async function addDocumentsToStore(
 ) {
   try {
     const store = VectorStore(env)
-    await store.addDocuments(documents)
+    return await store.addDocuments(documents)
   }
   catch (error) {
     throw new Error(`Failed to store documents ${error}`)
+  }
+}
+
+export async function deleteDocumentsFromStore(env: Bindings, ids: string[]) {
+  try {
+    const store = VectorStore(env)
+    await store.delete({ ids })
+  }
+  catch (error) {
+    throw new Error(`Failed to delete documents ${error}`)
   }
 }

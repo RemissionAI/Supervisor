@@ -3,7 +3,7 @@ import { KnowledgeModel } from '../models/knowledge.model'
 import { BaseRepository } from './base.repository'
 import { knowledge } from '~/config/db/schema'
 import type { Bindings } from '~/common/interfaces/common.interface'
-import type { InsertKnowledge } from '~/common/interfaces/knowledge.interface'
+import type { InsertKnowledge, UpdateKnowledge } from '~/common/interfaces/knowledge.interface'
 
 export class KnowledgeRepository extends BaseRepository {
   private readonly table = knowledge
@@ -33,6 +33,46 @@ export class KnowledgeRepository extends BaseRepository {
     }
     catch (err) {
       throw new Error(`Error inserting knowledge: ${err}`)
+    }
+  }
+
+  /**
+   * get a knowledge by id
+   * @param id - The knowledge id
+   * @returns The knowledge item.
+   */
+  async get(id: number): Promise<KnowledgeModel | null> {
+    try {
+      const result = await this.db
+        .select()
+        .from(this.table)
+        .where(eq(knowledge.id, id))
+        .get()
+
+      return result ? new KnowledgeModel(result) : null
+    }
+    catch (err) {
+      throw new Error(`Error fetching knowledge item: ${err}`)
+    }
+  }
+
+  /**
+   * get a knowledge by source
+   * @param source - The knowledge source
+   * @returns The knowledge item.
+   */
+  async getBySource(source: string): Promise<KnowledgeModel | null> {
+    try {
+      const result = await this.db
+        .select()
+        .from(this.table)
+        .where(eq(knowledge.source, source))
+        .get()
+
+      return result ? new KnowledgeModel(result) : null
+    }
+    catch (err) {
+      throw new Error(`Error fetching knowledge item: ${err}`)
     }
   }
 
@@ -78,6 +118,38 @@ export class KnowledgeRepository extends BaseRepository {
     }
     catch (err) {
       throw new Error(`Error getting knowledge items count`)
+    }
+  }
+
+  async update(
+    id: number,
+    data: UpdateKnowledge,
+  ): Promise<KnowledgeModel | null> {
+    try {
+      const result = await this.db
+        .update(this.table)
+        .set(data)
+        .where(eq(this.table.id, id))
+        .returning()
+        .get()
+      return result ? new KnowledgeModel(result) : null
+    }
+    catch (err) {
+      throw new Error(`Error updating knowledge: ${err}`)
+    }
+  }
+
+  async delete(id: number): Promise<boolean> {
+    try {
+      const result = await this.db
+        .delete(this.table)
+        .where(eq(this.table.id, id))
+        .returning()
+        .get()
+      return !!result
+    }
+    catch (err) {
+      throw new Error(`Error deleting knowledge: ${err}`)
     }
   }
 }

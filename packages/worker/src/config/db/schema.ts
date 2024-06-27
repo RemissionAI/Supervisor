@@ -23,6 +23,10 @@ export const knowledge = sqliteTable('knowledge_index', {
   type: text('type').notNull(),
   source: text('source').notNull(),
   content: text('content'),
+  documentIds: text('document_ids', { mode: 'json' })
+    .notNull()
+    .$type<string[]>()
+    .default(sql`'[]'`),
   createdAt: integer('created_at', { mode: 'timestamp' }),
   updatedAt: integer('updated_at', { mode: 'timestamp' }),
 })

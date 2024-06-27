@@ -8,3 +8,4 @@ export interface KnowledgeMeta {
 
 export type Knowledge = typeof knowledge.$inferSelect
 export type InsertKnowledge = typeof knowledge.$inferInsert
+export type UpdateKnowledge = Pick<Knowledge, 'content' | 'documentIds' | 'updatedAt' >
