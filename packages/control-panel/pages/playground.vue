@@ -2,33 +2,6 @@
 import { useStreamingFetch } from '~/composables/useStreamingFetch'
 
 const { result, input, handleSubmit, isLoading, stop } = useStreamingFetch(`${useRuntimeConfig().public.apiBaseUrl}/ask/stream`)
-
-const clockConfig = {
-  size: 300,
-  faceColor: '#f0f0f0',
-  markColor: '#333',
-  hourHandColor: 'red',
-  minuteHandColor: 'blue',
-  secondHandColor: '#e74c3c',
-  centerDotColor: '#333',
-}
-
-const buttonConfig = ref({
-  label: 'Click me!',
-  size: 'medium',
-  color: '#3498db',
-  textColor: '#ffffff',
-  hoverColor: '#2980b9',
-  hoverTextColor: '#ffffff',
-  rounded: true,
-  disabled: false,
-  icon: '🚀',
-  iconPosition: 'right',
-})
-
-function handleButtonClick() {
-  console.log('Button clicked!')
-}
 </script>
 
 <template>
@@ -36,8 +9,6 @@ function handleButtonClick() {
     <h2 class="font-semibold text-xl text-gray-900 dark:text-white leading-tight mb-5">
       Playground
     </h2>
-    <AnalogClock :config="clockConfig" />
-    <CustomButton :config="buttonConfig" @click="handleButtonClick" />
     <UCard>
       <div class="flex items-center w-full justify-start ">
         <UInput
