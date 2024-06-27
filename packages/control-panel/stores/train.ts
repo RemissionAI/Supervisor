@@ -42,6 +42,6 @@ export const useTrainStore = defineStore('train', () => {
     getKnowledgeCount,
     getTask,
     retrainKnowledge,
-    batchDeleteKnowledge
+    batchDeleteKnowledge,
   }
 })
